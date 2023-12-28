@@ -11,10 +11,10 @@
     </parent>
 
     <groupId>com.ld</groupId>
-    <artifactId>poetry</artifactId>
+    <artifactId>Utopian</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>poetry</name>
-    <description>poetry</description>
+    <name>Utopian</name>
+    <description>Utopian</description>
 
     <dependencies>
         <dependency>

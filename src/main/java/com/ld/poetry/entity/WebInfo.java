@@ -98,6 +98,20 @@ public class WebInfo implements Serializable {
     @TableField("comapi")
     private String comapi;
 
+    @TableField("resourceId")
+    private Integer resourceId;
+
+    @TableField("resourceTitle")
+    private String resourceTitle;
+
+    @TableField("resourceCover")
+    private String resourceCover;
+
+    @TableField("resourceImage")
+    private String resourceImage;
+
+
+
     /**
      * 是否启用[0:否，1:是]
      */

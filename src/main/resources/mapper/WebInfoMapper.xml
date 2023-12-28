@@ -21,11 +21,16 @@
         <result column="email" property="email"/>
         <result column="github" property="github"/>
         <result column="comapi" property="comapi"/>
+        <result column="resourceId" property="resourceId"/>
+        <result column="resourceTitle" property="resourceTitle"/>
+        <result column="resourceCover" property="resourceCover"/>
+        <result column="resourceImage" property="resourceImage"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, web_name, web_title, notices, footer, background_image, avatar, random_avatar, random_name, random_cover, waifu_json, status,gitee,qqNumber,email,github,comapi
+        id, web_name, web_title, notices, footer, background_image, avatar, random_avatar, random_name, random_cover, waifu_json, status,
+gitee,qqNumber,email,github,comapi,resourceId,resourceTitle,resourceCover,resourceImage
     </sql>
 
 </mapper>
