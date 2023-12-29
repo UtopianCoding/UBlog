@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ld.poetry.dao.StatMapper">
+
+
+    <select id="blogStat" resultType="java.util.Map">
+        select count(1) nums , DATE_FORMAT(t.create_time,'%Y-%m-%d') create_time from article t  GROUP BY DATE_FORMAT(t.create_time,'%Y-%m-%d')
+
+    </select>
+    <select id="labelStat" resultType="java.util.Map">
+
+        select count(1) as nums ,l.label_name ,l.id,l.sort_id
+        from article t ,label l
+        where t.label_id=l.id
+          and t.deleted!=1
+        GROUP BY l.label_name,l.id,l.sort_id
+        ORDER BY count(1) desc
+            limit 7;
+    </select>
+    <select id="classifyStat" resultType="java.util.Map">
+        select count(1) as value ,s.sort_name as name
+        from article t ,label l ,sort s
+        where t.label_id=l.id
+          and l.sort_id=s.id
+          and t.deleted!=1
+        GROUP BY s.sort_name
+        ORDER BY count(1) desc;
+    </select>
+</mapper>
