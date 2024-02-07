@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
  * 资源信息 前端控制器
  */
 @RestController
-@RequestMapping("/resource")
+@RequestMapping("/api/resource")
 public class ResourceController {
 
     @Autowired

@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
  * 七牛云
  */
 @RestController
-@RequestMapping("/qiniu")
+@RequestMapping("/api/qiniu")
 @ConditionalOnBean(QiniuUtil.class)
 public class QiniuController {
 

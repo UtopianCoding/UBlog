@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ld.poetry.config.PoetryResult;
 import com.ld.poetry.dao.ArticleMapper;
 import com.ld.poetry.dao.LabelMapper;
+import com.ld.poetry.dao.SortMapper;
 import com.ld.poetry.entity.*;
 import com.ld.poetry.service.ArticleService;
 import com.ld.poetry.service.UserService;
@@ -22,9 +23,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -45,6 +44,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
     @Resource
     private LabelMapper labelMapper;
+
+    @Autowired
+    private SortMapper sortMapper;
 
     @Value("${user.subscribe.format}")
     private String subscribeFormat;
@@ -168,64 +170,64 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         return PoetryResult.success();
     }
 
-    @Override
-    public PoetryResult<Page> listArticle(BaseRequestVO baseRequestVO) {
-        List<Integer> ids = null;
-        List<List<Integer>> idList = null;
-        if (StringUtils.hasText(baseRequestVO.getArticleSearch())) {
-            idList = commonQuery.getArticleIds(baseRequestVO.getArticleSearch());
-            ids = idList.stream().flatMap(Collection::stream).collect(Collectors.toList());
-            if (CollectionUtils.isEmpty(ids)) {
-                baseRequestVO.setRecords(new ArrayList<>());
-                return PoetryResult.success(baseRequestVO);
-            }
-        }
-
-        LambdaQueryChainWrapper<Article> lambdaQuery = lambdaQuery();
-        lambdaQuery.in(!CollectionUtils.isEmpty(ids), Article::getId, ids);
-        lambdaQuery.like(StringUtils.hasText(baseRequestVO.getSearchKey()), Article::getArticleTitle, baseRequestVO.getSearchKey());
-        lambdaQuery.eq(baseRequestVO.getRecommendStatus() != null && baseRequestVO.getRecommendStatus(), Article::getRecommendStatus, PoetryEnum.STATUS_ENABLE.getCode());
-
-
-        if (baseRequestVO.getLabelId() != null) {
-            lambdaQuery.eq(Article::getLabelId, baseRequestVO.getLabelId());
-        } else if (baseRequestVO.getSortId() != null) {
-            lambdaQuery.eq(Article::getSortId, baseRequestVO.getSortId());
-        }
-
-        lambdaQuery.orderByDesc(Article::getCreateTime);
-
-        lambdaQuery.page(baseRequestVO);
-
-        List<Article> records = baseRequestVO.getRecords();
-        if (!CollectionUtils.isEmpty(records)) {
-            List<ArticleVO> articles = new ArrayList<>();
-            List<ArticleVO> titles = new ArrayList<>();
-            List<ArticleVO> contents = new ArrayList<>();
-
-            for (Article article : records) {
-                article.setPassword(null);
-                if (article.getArticleContent().length() > CommonConst.SUMMARY) {
-                    article.setArticleContent(article.getArticleContent().substring(0, CommonConst.SUMMARY).replace("`", "").replace("#", "").replace(">", ""));
-                }
-                ArticleVO articleVO = buildArticleVO(article, false);
-                if (CollectionUtils.isEmpty(ids)) {
-                    articles.add(articleVO);
-                } else if (idList.get(0).contains(articleVO.getId())) {
-                    titles.add(articleVO);
-                } else if (idList.get(1).contains(articleVO.getId())) {
-                    contents.add(articleVO);
-                }
-            }
-
-            List<ArticleVO> collect = new ArrayList<>();
-            collect.addAll(articles);
-            collect.addAll(titles);
-            collect.addAll(contents);
-            baseRequestVO.setRecords(collect);
-        }
-        return PoetryResult.success(baseRequestVO);
-    }
+//    @Override
+//    public PoetryResult<Page> listArticle(BaseRequestVO baseRequestVO) {
+//        List<Integer> ids = null;
+//        List<List<Integer>> idList = null;
+//        if (StringUtils.hasText(baseRequestVO.getArticleSearch())) {
+//            idList = commonQuery.getArticleIds(baseRequestVO.getArticleSearch());
+//            ids = idList.stream().flatMap(Collection::stream).collect(Collectors.toList());
+//            if (CollectionUtils.isEmpty(ids)) {
+//                baseRequestVO.setRecords(new ArrayList<>());
+//                return PoetryResult.success(baseRequestVO);
+//            }
+//        }
+//
+//        LambdaQueryChainWrapper<Article> lambdaQuery = lambdaQuery();
+//        lambdaQuery.in(!CollectionUtils.isEmpty(ids), Article::getId, ids);
+//        lambdaQuery.like(StringUtils.hasText(baseRequestVO.getSearchKey()), Article::getArticleTitle, baseRequestVO.getSearchKey());
+//        lambdaQuery.eq(baseRequestVO.getRecommendStatus() != null && baseRequestVO.getRecommendStatus(), Article::getRecommendStatus, PoetryEnum.STATUS_ENABLE.getCode());
+//
+//
+//        if (baseRequestVO.getLabelId() != null) {
+//            lambdaQuery.eq(Article::getLabelId, baseRequestVO.getLabelId());
+//        } else if (baseRequestVO.getSortId() != null) {
+//            lambdaQuery.eq(Article::getSortId, baseRequestVO.getSortId());
+//        }
+//
+//        lambdaQuery.orderByDesc(Article::getCreateTime);
+//
+//        lambdaQuery.page(baseRequestVO);
+//
+//        List<Article> records = baseRequestVO.getRecords();
+//        if (!CollectionUtils.isEmpty(records)) {
+//            List<ArticleVO> articles = new ArrayList<>();
+//            List<ArticleVO> titles = new ArrayList<>();
+//            List<ArticleVO> contents = new ArrayList<>();
+//
+//            for (Article article : records) {
+//                article.setPassword(null);
+//                if (article.getArticleContent().length() > CommonConst.SUMMARY) {
+//                    article.setArticleContent(article.getArticleContent().substring(0, CommonConst.SUMMARY).replace("`", "").replace("#", "").replace(">", ""));
+//                }
+//                ArticleVO articleVO = buildArticleVO(article, false);
+//                if (CollectionUtils.isEmpty(ids)) {
+//                    articles.add(articleVO);
+//                } else if (idList.get(0).contains(articleVO.getId())) {
+//                    titles.add(articleVO);
+//                } else if (idList.get(1).contains(articleVO.getId())) {
+//                    contents.add(articleVO);
+//                }
+//            }
+//
+//            List<ArticleVO> collect = new ArrayList<>();
+//            collect.addAll(articles);
+//            collect.addAll(titles);
+//            collect.addAll(contents);
+//            baseRequestVO.setRecords(collect);
+//        }
+//        return PoetryResult.success(baseRequestVO);
+//    }
 
     @Override
     public PoetryResult<ArticleVO> getArticleById(Integer id, String password) {
@@ -298,6 +300,41 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         return PoetryResult.success(articleVO);
     }
 
+    @Override
+    public PoetryResult<Map<Integer, List<ArticleVO>>> listSortArticle() {
+        Map<Integer, List<ArticleVO>> result = (Map<Integer, List<ArticleVO>>) PoetryCache.get(CommonConst.SORT_ARTICLE_LIST);
+        if (result != null) {
+            return PoetryResult.success(result);
+        }
+
+        Map<Integer, List<ArticleVO>> map = new HashMap<>();
+
+        List<Sort> sorts = new LambdaQueryChainWrapper<>(sortMapper).select(Sort::getId).list();
+        for (Sort sort : sorts) {
+            LambdaQueryChainWrapper<Article> lambdaQuery = lambdaQuery()
+                    .eq(Article::getSortId, sort.getId())
+                    .orderByDesc(Article::getCreateTime)
+                    .last("limit 6");
+            List<Article> articleList = lambdaQuery.list();
+            if (CollectionUtils.isEmpty(articleList)) {
+                continue;
+            }
+
+            List<ArticleVO> articleVOList = articleList.stream().map(article -> {
+                article.setPassword(null);
+//                article.setVideoUrl(null);
+                if (article.getArticleContent().length() > CommonConst.SUMMARY) {
+                    article.setArticleContent(article.getArticleContent().substring(0, CommonConst.SUMMARY).replace("`", "").replace("#", "").replace(">", ""));
+                }
+                return buildArticleVO(article, false);
+            }).collect(Collectors.toList());
+            map.put(sort.getId(), articleVOList);
+        }
+
+        PoetryCache.put(CommonConst.SORT_ARTICLE_LIST, map, CommonConst.TOKEN_INTERVAL);
+        return PoetryResult.success(map);
+    }
+
     private ArticleVO buildArticleVO(Article article, Boolean isAdmin) {
         ArticleVO articleVO = new ArticleVO();
         BeanUtils.copyProperties(article, articleVO);
@@ -343,5 +380,64 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             }
         }
         return articleVO;
+    }
+    @Override
+    public PoetryResult<Page> listArticle(BaseRequestVO baseRequestVO) {
+        List<Integer> ids = null;
+        List<List<Integer>> idList = null;
+        if (StringUtils.hasText(baseRequestVO.getArticleSearch())) {
+            idList = commonQuery.getArticleIds(baseRequestVO.getArticleSearch());
+            ids = idList.stream().flatMap(Collection::stream).collect(Collectors.toList());
+            if (CollectionUtils.isEmpty(ids)) {
+                baseRequestVO.setRecords(new ArrayList<>());
+                return PoetryResult.success(baseRequestVO);
+            }
+        }
+
+        LambdaQueryChainWrapper<Article> lambdaQuery = lambdaQuery();
+        lambdaQuery.in(!CollectionUtils.isEmpty(ids), Article::getId, ids);
+        lambdaQuery.like(StringUtils.hasText(baseRequestVO.getSearchKey()), Article::getArticleTitle, baseRequestVO.getSearchKey());
+        lambdaQuery.eq(baseRequestVO.getRecommendStatus() != null && baseRequestVO.getRecommendStatus(), Article::getRecommendStatus, PoetryEnum.STATUS_ENABLE.getCode());
+
+
+        if (baseRequestVO.getLabelId() != null) {
+            lambdaQuery.eq(Article::getLabelId, baseRequestVO.getLabelId());
+        } else if (baseRequestVO.getSortId() != null) {
+            lambdaQuery.eq(Article::getSortId, baseRequestVO.getSortId());
+        }
+
+        lambdaQuery.orderByDesc(Article::getCreateTime);
+
+        lambdaQuery.page(baseRequestVO);
+
+        List<Article> records = baseRequestVO.getRecords();
+        if (!CollectionUtils.isEmpty(records)) {
+            List<ArticleVO> articles = new ArrayList<>();
+            List<ArticleVO> titles = new ArrayList<>();
+            List<ArticleVO> contents = new ArrayList<>();
+
+            for (Article article : records) {
+                article.setPassword(null);
+//                article.setVideoUrl(null);
+                if (article.getArticleContent().length() > CommonConst.SUMMARY) {
+                    article.setArticleContent(article.getArticleContent().substring(0, CommonConst.SUMMARY).replace("`", "").replace("#", "").replace(">", ""));
+                }
+                ArticleVO articleVO = buildArticleVO(article, false);
+                if (CollectionUtils.isEmpty(ids)) {
+                    articles.add(articleVO);
+                } else if (idList.get(0).contains(articleVO.getId())) {
+                    titles.add(articleVO);
+                } else if (idList.get(1).contains(articleVO.getId())) {
+                    contents.add(articleVO);
+                }
+            }
+
+            List<ArticleVO> collect = new ArrayList<>();
+            collect.addAll(articles);
+            collect.addAll(titles);
+            collect.addAll(contents);
+            baseRequestVO.setRecords(collect);
+        }
+        return PoetryResult.success(baseRequestVO);
     }
 }

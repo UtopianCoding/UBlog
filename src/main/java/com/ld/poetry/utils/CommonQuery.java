@@ -1,5 +1,12 @@
 package com.ld.poetry.utils;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.baidubce.http.ApiExplorerClient;
+import com.baidubce.http.AppSigner;
+import com.baidubce.http.HttpMethodName;
+import com.baidubce.model.ApiExplorerRequest;
+import com.baidubce.model.ApiExplorerResponse;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.ld.poetry.dao.*;
 import com.ld.poetry.entity.*;
@@ -45,12 +52,37 @@ public class CommonQuery {
 
     private Searcher searcher;
 
+
+
     @PostConstruct
     public void init() {
         try {
             searcher = Searcher.newWithBuffer(IOUtils.toByteArray(new ClassPathResource("ip2region.xdb").getInputStream()));
         } catch (Exception e) {
         }
+    }
+
+    public String queryIp(String ip){
+        String path = "http://gwgp-hrtx4zoqeyk.n.bdcloudapi.com/iplocaltion";
+        ApiExplorerRequest request = new ApiExplorerRequest(HttpMethodName.GET, path);
+        request.setCredentials("eb502f1a2c244089899d1888707a136a", "48ba317adf384e738acee1f7f0808905");
+
+        request.addHeaderParameter("Content-Type", "application/json;charset=UTF-8");
+
+        request.addQueryParameter("ip", ip);
+
+
+
+        ApiExplorerClient client = new ApiExplorerClient(new AppSigner());
+
+        try {
+            ApiExplorerResponse response = client.sendRequest(request);
+            // 返回结果格式为Json字符串
+            return response.getResult();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public void saveHistory(String ip) {
@@ -65,21 +97,16 @@ public class CommonQuery {
                     HistoryInfo historyInfo = new HistoryInfo();
                     historyInfo.setIp(ip);
                     historyInfo.setUserId(userId);
-                    if (searcher != null) {
-                        try {
-                            String search = searcher.search(ip);
-                            String[] region = search.split("\\|");
-                            if (!"0".equals(region[0])) {
-                                historyInfo.setNation(region[0]);
-                            }
-                            if (!"0".equals(region[2])) {
-                                historyInfo.setProvince(region[2]);
-                            }
-                            if (!"0".equals(region[3])) {
-                                historyInfo.setCity(region[3]);
-                            }
-                        } catch (Exception e) {
-                        }
+                    String ipResult = queryIp(ip);
+
+                    if (ipResult!=null){
+                        JSONObject jsonObject = (JSONObject) JSONObject.parseObject(ipResult).get("result");
+                        String nation = (String) jsonObject.get("nation");
+                        String province = (String) jsonObject.get("province");
+                        String city = (String) jsonObject.get("city");
+                        historyInfo.setNation(nation);
+                        historyInfo.setProvince(province);
+                        historyInfo.setCity(city);
                     }
                     historyInfoMapper.insert(historyInfo);
                 }

@@ -14,12 +14,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Map;
+
 
 /**
  * 文章表
  */
 @RestController
-@RequestMapping("/article")
+@RequestMapping("/api/article")
 public class ArticleController {
 
     @Autowired
@@ -69,6 +72,10 @@ public class ArticleController {
     @PostMapping("/listArticle")
     public PoetryResult<Page> listArticle(@RequestBody BaseRequestVO baseRequestVO) {
         return articleService.listArticle(baseRequestVO);
+    }
+    @GetMapping("/listSortArticle")
+    public PoetryResult<Map<Integer, List<ArticleVO>>> listSortArticle() {
+        return articleService.listSortArticle();
     }
 
     /**

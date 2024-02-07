@@ -24,7 +24,7 @@ import java.util.List;
  * 恋爱信息 前端控制器
  */
 @RestController
-@RequestMapping("/family")
+@RequestMapping("/api/family")
 public class FamilyController {
 
     @Autowired

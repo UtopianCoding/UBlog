@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
  * 仅站长可以操作
  */
 @RestController
-@RequestMapping("/webInfo")
+@RequestMapping("/api/webInfo")
 public class WebInfoController {
 
     @Value("${store.type}")

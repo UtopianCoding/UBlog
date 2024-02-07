@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
  * 微言表 前端控制器
  */
 @RestController
-@RequestMapping("/weiYan")
+@RequestMapping("/api/weiYan")
 public class WeiYanController {
 
     @Autowired

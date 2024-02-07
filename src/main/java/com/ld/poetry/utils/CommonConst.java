@@ -173,6 +173,8 @@ public class CommonConst {
      */
     public static final int TREE_HOLE_COMMENT_SOURCE = 0;
 
+    public static final String SORT_ARTICLE_LIST = "sort_article_list";
+
     /**
      * 资源类型
      */

@@ -1,11 +1,14 @@
 server:
-  port: 8081
+  port: 8080
   tomcat:
     threads.max: 50
     max-connections: 100
     max-http-form-post-size: 35MB
     connection-timeout: 60000
-
+    remoteip:
+      remote-ip-header: x-forward-for
+    uri-encoding: UTF-8
+  max-http-header-size: 8096
 mybatis-plus:
   mapper-locations: classpath*:mapper/**/*.xml
 #  configuration:
@@ -16,6 +19,8 @@ mybatis-plus:
       logic-not-delete-value: 0
 
 spring:
+  main:
+    allow-bean-definition-overriding: true
   servlet:
     multipart:
       max-file-size: 30MB

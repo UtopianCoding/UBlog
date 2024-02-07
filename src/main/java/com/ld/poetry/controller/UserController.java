@@ -8,6 +8,7 @@ import com.ld.poetry.service.UserService;
 import com.ld.poetry.utils.CommonConst;
 import com.ld.poetry.utils.PoetryCache;
 import com.ld.poetry.utils.PoetryUtil;
+import com.ld.poetry.vo.LoginVo;
 import com.ld.poetry.vo.UserVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -19,7 +20,7 @@ import java.util.List;
  * 用户信息表 前端控制器
  */
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/api/user")
 public class UserController {
 
     @Autowired
@@ -39,10 +40,11 @@ public class UserController {
      * 用户名、邮箱、手机号/密码登录
      */
     @PostMapping("/login")
-    public PoetryResult<UserVO> login(@RequestParam("account") String account,
-                                      @RequestParam("password") String password,
-                                      @RequestParam(value = "isAdmin", defaultValue = "false") Boolean isAdmin) {
-        return userService.login(account, password, isAdmin);
+    public PoetryResult<UserVO> login( @RequestBody LoginVo vo) {
+        if (vo.getIsAdmin()==null){
+            vo.setIsAdmin(false);
+        }
+        return userService.login(vo.getAccount(), vo.getPassword(), vo.getIsAdmin());
     }
 
 

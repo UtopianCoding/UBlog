@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
  * 文章评论表 前端控制器
  */
 @RestController
-@RequestMapping("/comment")
+@RequestMapping("/api/comment")
 public class CommentController {
 
 
