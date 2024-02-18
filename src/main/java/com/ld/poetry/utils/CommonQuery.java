@@ -1,5 +1,8 @@
 package com.ld.poetry.utils;
 
+import cn.hutool.http.HttpRequest;
+import cn.hutool.http.HttpResponse;
+import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baidubce.http.ApiExplorerClient;
@@ -21,6 +24,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -63,27 +67,41 @@ public class CommonQuery {
     }
 
     public String queryIp(String ip){
-        String path = "http://gwgp-hrtx4zoqeyk.n.bdcloudapi.com/iplocaltion";
-        ApiExplorerRequest request = new ApiExplorerRequest(HttpMethodName.GET, path);
-        request.setCredentials("eb502f1a2c244089899d1888707a136a", "48ba317adf384e738acee1f7f0808905");
+//        String path = "http://gwgp-hrtx4zoqeyk.n.bdcloudapi.com/iplocaltion";
+//        ApiExplorerRequest request = new ApiExplorerRequest(HttpMethodName.GET, path);
+//        request.setCredentials("eb502f1a2c244089899d1888707a136a", "48ba317adf384e738acee1f7f0808905");
+//
+//        request.addHeaderParameter("Content-Type", "application/json;charset=UTF-8");
+//
+//        request.addQueryParameter("ip", ip);
+//
+//
+//
+//        ApiExplorerClient client = new ApiExplorerClient(new AppSigner());
+//
+//        try {
+//            ApiExplorerResponse response = client.sendRequest(request);
+//            // 返回结果格式为Json字符串
+//            return response.getResult();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        return null;
+        String path="https://searchplugin.csdn.net/api/v1/ip/get?ip="+ip;
+        HttpResponse httpResponse = HttpRequest.get(path).execute();
+        return httpResponse.body();
 
-        request.addHeaderParameter("Content-Type", "application/json;charset=UTF-8");
-
-        request.addQueryParameter("ip", ip);
-
-
-
-        ApiExplorerClient client = new ApiExplorerClient(new AppSigner());
-
-        try {
-            ApiExplorerResponse response = client.sendRequest(request);
-            // 返回结果格式为Json字符串
-            return response.getResult();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
     }
+
+//    public static void main(String[] args) {
+//        String path="https://searchplugin.csdn.net/api/v1/ip/get?ip=47.93.39.67";
+//        HttpResponse httpResponse = HttpRequest.get(path).execute();
+//        String body = httpResponse.body();
+//        JSONObject jsonObject = (JSONObject) JSONObject.parseObject(body).get("data");
+//        String address = (String) jsonObject.get("address");
+//        String[] s = address.split(" ");
+//        System.out.println(jsonObject.get("address"));
+//    }
 
     public void saveHistory(String ip) {
         Integer userId = PoetryUtil.getUserId();
@@ -100,13 +118,20 @@ public class CommonQuery {
                     String ipResult = queryIp(ip);
 
                     if (ipResult!=null){
-                        JSONObject jsonObject = (JSONObject) JSONObject.parseObject(ipResult).get("result");
-                        String nation = (String) jsonObject.get("nation");
-                        String province = (String) jsonObject.get("province");
-                        String city = (String) jsonObject.get("city");
-                        historyInfo.setNation(nation);
-                        historyInfo.setProvince(province);
-                        historyInfo.setCity(city);
+//                        JSONObject jsonObject = (JSONObject) JSONObject.parseObject(ipResult).get("result");
+                        JSONObject jsonObject = (JSONObject) JSONObject.parseObject(ipResult).get("data");
+                        String address = (String) jsonObject.get("address");
+                        String[] s = address.split(" ");
+                        if (ip!="127.0.0.1"){
+                            historyInfo.setNation(s[0]);
+                            historyInfo.setProvince(s[1]);
+                            historyInfo.setCity(s[2]);
+                        }else{
+                            historyInfo.setNation(s[0]);
+                            historyInfo.setProvince(s[0]);
+                            historyInfo.setCity(s[0]);
+                        }
+
                     }
                     historyInfoMapper.insert(historyInfo);
                 }
