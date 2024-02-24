@@ -60,6 +60,8 @@ public class WebInfoController {
     @Resource
     private CommonQuery commonQuery;
 
+    @Resource
+    private FriendBlogMapper friendBlogMapper;
 
     /**
      * 更新网站信息
@@ -212,6 +214,18 @@ public class WebInfoController {
         }
         ResourcePath resourcePath = new ResourcePath();
         BeanUtils.copyProperties(resourcePathVO, resourcePath);
+        if (resourcePathVO.getClassify().equals("1")){
+            FriendBlog friendBlog=new FriendBlog();
+            friendBlog.setTitle(resourcePathVO.getTitle());
+            friendBlog.setCover(resourcePathVO.getCover());
+            friendBlog.setUrl(resourcePathVO.getUrl());
+            friendBlog.setIntroduction(resourcePathVO.getIntroduction());
+            friendBlog.setState(1);
+//            friendBlog.setCreatetime(LocalDateTime.now());
+            friendBlog.setClassify("技术博主");
+            friendBlogMapper.insert(friendBlog);
+
+        }
         resourcePathMapper.insert(resourcePath);
         return PoetryResult.success();
     }
@@ -219,7 +233,7 @@ public class WebInfoController {
     /**
      * 保存友链
      */
-    @LoginCheck
+//    @LoginCheck
     @PostMapping("/saveFriend")
     @SaveCheck
     public PoetryResult saveFriend(@RequestBody ResourcePathVO resourcePathVO) {
@@ -227,37 +241,61 @@ public class WebInfoController {
                 !StringUtils.hasText(resourcePathVO.getUrl()) || !StringUtils.hasText(resourcePathVO.getIntroduction())) {
             return PoetryResult.fail("信息不全！");
         }
-        ResourcePath friend = new ResourcePath();
-        friend.setClassify(CommonConst.DEFAULT_FRIEND);
-        friend.setTitle(resourcePathVO.getTitle());
-        friend.setIntroduction(resourcePathVO.getIntroduction());
-        friend.setCover(resourcePathVO.getCover());
-        friend.setUrl(resourcePathVO.getUrl());
-        friend.setRemark(PoetryUtil.getUserId().toString());
-        friend.setType(CommonConst.RESOURCE_PATH_TYPE_FRIEND);
-        friend.setStatus(Boolean.FALSE);
-        resourcePathMapper.insert(friend);
+        FriendBlog friendBlog=new FriendBlog();
+        friendBlog.setTitle(resourcePathVO.getTitle());
+        friendBlog.setCover(resourcePathVO.getCover());
+        friendBlog.setUrl(resourcePathVO.getUrl());
+        friendBlog.setIntroduction(resourcePathVO.getIntroduction());
+        friendBlog.setState(1);
+        friendBlog.setClassify("技术博主");
+        friendBlogMapper.insert(friendBlog);
         return PoetryResult.success();
+
+
+//        ResourcePath friend = new ResourcePath();
+//        friend.setClassify(CommonConst.DEFAULT_FRIEND);
+//        friend.setTitle(resourcePathVO.getTitle());
+//        friend.setIntroduction(resourcePathVO.getIntroduction());
+//        friend.setCover(resourcePathVO.getCover());
+//        friend.setUrl(resourcePathVO.getUrl());
+//        friend.setRemark(PoetryUtil.getUserId().toString());
+//        friend.setType(CommonConst.RESOURCE_PATH_TYPE_FRIEND);
+//        friend.setStatus(Boolean.FALSE);
+//        resourcePathMapper.insert(friend);
+//        return PoetryResult.success();
     }
 
     /**
      * 查询友链
      */
     @GetMapping("/listFriend")
-    public PoetryResult<Map<String, List<ResourcePathVO>>> listFriend() {
-        LambdaQueryChainWrapper<ResourcePath> wrapper = new LambdaQueryChainWrapper<>(resourcePathMapper);
-        List<ResourcePath> resourcePaths = wrapper.eq(ResourcePath::getType, CommonConst.RESOURCE_PATH_TYPE_FRIEND)
-                .eq(ResourcePath::getStatus, Boolean.TRUE)
-                .orderByAsc(ResourcePath::getCreateTime)
-                .list();
-        Map<String, List<ResourcePathVO>> collect = new HashMap<>();
-        if (!CollectionUtils.isEmpty(resourcePaths)) {
-            collect = resourcePaths.stream().map(rp -> {
-                ResourcePathVO resourcePathVO = new ResourcePathVO();
-                BeanUtils.copyProperties(rp, resourcePathVO);
-                return resourcePathVO;
-            }).collect(Collectors.groupingBy(ResourcePathVO::getClassify));
+    public PoetryResult<Map<String, List<FriendBlog>>> listFriend() {
+        LambdaQueryChainWrapper<FriendBlog> wrapper=new LambdaQueryChainWrapper<>(friendBlogMapper);
+        List<FriendBlog> friendBlogs = wrapper.eq(FriendBlog::getState, 1).orderByAsc(FriendBlog::getCreatetime).list();
+
+        Map<String, List<FriendBlog>> collect = new HashMap<>();
+        if (!CollectionUtils.isEmpty(friendBlogs)) {
+            collect = friendBlogs.stream().map(rp -> {
+                FriendBlog friendBlog = new FriendBlog();
+                BeanUtils.copyProperties(rp, friendBlog);
+                return friendBlog;
+            }).collect(Collectors.groupingBy(FriendBlog::getClassify));
         }
+
+
+//        LambdaQueryChainWrapper<ResourcePath> wrapper = new LambdaQueryChainWrapper<>(resourcePathMapper);
+//        List<ResourcePath> resourcePaths = wrapper.eq(ResourcePath::getType, CommonConst.RESOURCE_PATH_TYPE_FRIEND)
+//                .eq(ResourcePath::getStatus, Boolean.TRUE)
+//                .orderByAsc(ResourcePath::getCreateTime)
+//                .list();
+//        Map<String, List<ResourcePathVO>> collect = new HashMap<>();
+//        if (!CollectionUtils.isEmpty(resourcePaths)) {
+//            collect = resourcePaths.stream().map(rp -> {
+//                ResourcePathVO resourcePathVO = new ResourcePathVO();
+//                BeanUtils.copyProperties(rp, resourcePathVO);
+//                return resourcePathVO;
+//            }).collect(Collectors.groupingBy(ResourcePathVO::getClassify));
+//        }
         return PoetryResult.success(collect);
     }
 
