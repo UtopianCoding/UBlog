@@ -1,10 +1,14 @@
 package com.ld.poetry.service.impl;
 
+import com.alibaba.dashscope.exception.ApiException;
+import com.alibaba.dashscope.exception.InputRequiredException;
+import com.alibaba.dashscope.exception.NoApiKeyException;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.conditions.update.LambdaUpdateChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.ld.poetry.auto.AbstractArticle;
 import com.ld.poetry.config.PoetryResult;
 import com.ld.poetry.dao.ArticleMapper;
 import com.ld.poetry.dao.LabelMapper;
@@ -244,7 +248,25 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         article.setPassword(null);
         articleMapper.updateViewCount(id);
         ArticleVO articleVO = buildArticleVO(article, false);
-        return PoetryResult.success(articleVO);
+        if (articleVO.getAbstractArticle()!=null){
+            return PoetryResult.success(articleVO);
+
+        }else{
+            String regex = "https?://|\\*|#|`";
+            String content = articleVO.getArticleContent().replaceAll(regex, "");
+            String abart="";
+            try {
+                abart = AbstractArticle.callWithMessage(content);
+            }  catch (ApiException | NoApiKeyException | InputRequiredException e) {
+                System.out.println(e.getMessage());
+            }
+            articleVO.setAbstractArticle(abart);
+            article.setAbstractArticle(abart);
+            articleMapper.updateById(article);
+            return PoetryResult.success(articleVO);
+        }
+
+
     }
 
     @Override

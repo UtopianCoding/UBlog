@@ -1,6 +1,7 @@
 package com.ld.poetry.service;
 
 
+import com.ld.poetry.entity.Distance;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,4 +27,6 @@ public interface StatService {
      * @return
      */
     List<Map<String, Object>> classifyStat();
+
+    Distance getDistances();
 }

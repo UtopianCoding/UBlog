@@ -66,4 +66,6 @@ public class ArticleVO {
     private String username;
     private Sort sort;
     private Label label;
+
+    private String abstractArticle;
 }

@@ -2,6 +2,8 @@ package com.ld.poetry.utils;
 
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.ld.poetry.dao.FriendBlogMapper;
+import com.ld.poetry.dao.StatMapper;
+import com.ld.poetry.entity.Distance;
 import com.ld.poetry.entity.FriendBlog;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -11,6 +13,9 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.math.RoundingMode;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
@@ -31,6 +36,9 @@ public class TimeTaskSet {
 
     @Resource
     private FriendBlogMapper friendBlogMapper;
+
+    @Resource
+    private StatMapper statMapper;
 
     @Scheduled(cron = "0 0 1 * * ?")
     public void isJudgeUrlState(){
@@ -59,6 +67,26 @@ public class TimeTaskSet {
         }
 
     }
+
+
+    @Async
+    @Scheduled(cron = "0/1 * * * * ?")
+    public void isAddDistances(){
+
+        Distance distances = statMapper.getDistances();
+        if (distances!=null){
+
+            Long distancesDistance = distances.getDistance();
+
+            distances.setDistance(distancesDistance+17);
+            BigDecimal distanceInKm=new BigDecimal(distances.getDistance());
+            BigDecimal auInKm = new BigDecimal("149597870.7");
+            BigDecimal distanceInAU = distanceInKm.divide(auInKm, 6, RoundingMode.HALF_UP);
+            distances.setAu(distanceInAU);
+            statMapper.updateDistances(distances);
+        }
+    }
+
 
 
 }

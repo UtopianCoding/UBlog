@@ -1,6 +1,7 @@
 package com.ld.poetry.service.impl;
 
 import com.ld.poetry.dao.StatMapper;
+import com.ld.poetry.entity.Distance;
 import com.ld.poetry.service.StatService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,5 +41,10 @@ public class StatServiceImpl implements StatService {
     @Override
     public List<Map<String, Object>> classifyStat() {
         return statMapper.classifyStat();
+    }
+
+    @Override
+    public Distance getDistances() {
+        return statMapper.getDistances();
     }
 }

@@ -127,5 +127,7 @@ public class Article implements Serializable {
     @TableLogic
     private Boolean deleted;
 
+    @TableField(value = "abstractArticle")
+    private String abstractArticle;
 
 }

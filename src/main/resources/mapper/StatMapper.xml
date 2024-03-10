@@ -26,4 +26,12 @@
         GROUP BY s.sort_name
         ORDER BY count(1) desc;
     </select>
+    <select id="getDistances" resultType="com.ld.poetry.entity.Distance">
+        select * from Distance
+    </select>
+    <update id="updateDistances">
+        update Distance
+        set Distance=#{distance},AU=#{au}
+        where ID=#{id}
+    </update>
 </mapper>

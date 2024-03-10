@@ -1,6 +1,8 @@
 package com.ld.poetry.dao;
 
 
+import com.ld.poetry.entity.Distance;
+
 import java.util.List;
 import java.util.Map;
 
@@ -23,4 +25,8 @@ public interface StatMapper {
      * @return
      */
     List<Map<String, Object>> classifyStat();
+
+    Distance getDistances();
+
+    void updateDistances(Distance distances);
 }
