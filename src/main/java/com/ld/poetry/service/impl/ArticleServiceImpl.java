@@ -256,7 +256,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             String content = articleVO.getArticleContent().replaceAll(regex, "");
             String abart="";
             try {
-                abart = AbstractArticle.callWithMessage(content);
+                abart = AbstractArticle.callWithMessage(content).replace(regex,"");
             }  catch (ApiException | NoApiKeyException | InputRequiredException e) {
                 System.out.println(e.getMessage());
             }
