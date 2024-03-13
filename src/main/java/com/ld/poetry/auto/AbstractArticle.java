@@ -1,4 +1,7 @@
 package com.ld.poetry.auto;
+import com.alibaba.dashscope.aigc.conversation.Conversation;
+import com.alibaba.dashscope.aigc.conversation.ConversationParam;
+import com.alibaba.dashscope.aigc.conversation.ConversationResult;
 import com.alibaba.dashscope.aigc.generation.Generation;
 import com.alibaba.dashscope.aigc.generation.GenerationOutput;
 import com.alibaba.dashscope.aigc.generation.GenerationResult;
@@ -11,8 +14,13 @@ import com.alibaba.dashscope.common.*;
 import com.alibaba.dashscope.tokenizers.Tokenization;
 import com.alibaba.dashscope.tokenizers.TokenizationResult;
 import com.baidubce.util.JsonUtils;
+import io.reactivex.Flowable;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * @BelongsProject: UBlog
  * @BelongsPackage: com.ld.poetry.auto

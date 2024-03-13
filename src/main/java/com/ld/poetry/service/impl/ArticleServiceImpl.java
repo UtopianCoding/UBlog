@@ -248,18 +248,18 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         article.setPassword(null);
         articleMapper.updateViewCount(id);
         ArticleVO articleVO = buildArticleVO(article, false);
-        if (articleVO.getAbstractArticle()!=null){
+        if (StringUtil.isNotEmpty(articleVO.getAbstractArticle())){
             return PoetryResult.success(articleVO);
 
         }else{
             String regex = "https?://|\\*|#|`";
             String content = articleVO.getArticleContent().replaceAll(regex, "");
             String abart="";
-            try {
-                abart = AbstractArticle.callWithMessage(content).replace(regex,"");
-            }  catch (ApiException | NoApiKeyException | InputRequiredException e) {
-                System.out.println(e.getMessage());
-            }
+//            try {
+////                abart = AbstractArticle.callWithMessage(content).replace(regex,"");
+//            }  catch (ApiException | NoApiKeyException | InputRequiredException e) {
+//                System.out.println(e.getMessage());
+//            }
             articleVO.setAbstractArticle(abart);
             article.setAbstractArticle(abart);
             articleMapper.updateById(article);
