@@ -66,4 +66,10 @@ public class WeiYan implements Serializable {
     private LocalDateTime createTime;
 
 
+    @TableField("user_name")
+    private String userName;
+
+    @TableField("realm")
+    private String realm;
+
 }

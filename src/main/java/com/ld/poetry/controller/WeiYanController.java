@@ -52,6 +52,8 @@ public class WeiYanController {
         weiYan.setUserId(PoetryUtil.getUserId());
         weiYan.setContent(weiYanVO.getContent());
         weiYan.setIsPublic(weiYanVO.getIsPublic());
+        weiYan.setUserName(PoetryUtil.getUsername());
+        weiYan.setRealm("一年级");
         weiYan.setType(CommonConst.WEIYAN_TYPE_FRIEND);
         weiYanService.save(weiYan);
         return PoetryResult.success();
@@ -84,6 +86,8 @@ public class WeiYanController {
         weiYan.setSource(weiYanVO.getSource());
         weiYan.setCreateTime(weiYanVO.getCreateTime());
         weiYan.setType(CommonConst.WEIYAN_TYPE_NEWS);
+        weiYan.setUserName(PoetryUtil.getUsername());
+        weiYan.setRealm("一年级");
         weiYanService.save(weiYan);
         return PoetryResult.success();
     }
