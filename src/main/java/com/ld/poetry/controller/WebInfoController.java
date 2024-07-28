@@ -7,7 +7,7 @@ import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ld.poetry.config.LoginCheck;
-import com.ld.poetry.config.PoetryResult;
+import com.ld.poetry.config.UResult;
 import com.ld.poetry.config.SaveCheck;
 import com.ld.poetry.dao.*;
 import com.ld.poetry.entity.*;
@@ -68,7 +68,7 @@ public class WebInfoController {
      */
     @LoginCheck(0)
     @PostMapping("/updateWebInfo")
-    public PoetryResult<WebInfo> updateWebInfo(@RequestBody WebInfo webInfo) {
+    public UResult<WebInfo> updateWebInfo(@RequestBody WebInfo webInfo) {
         webInfoService.updateById(webInfo);
 
         LambdaQueryChainWrapper<WebInfo> wrapper = new LambdaQueryChainWrapper<>(webInfoService.getBaseMapper());
@@ -77,7 +77,7 @@ public class WebInfoController {
             list.get(0).setDefaultStoreType(defaultType);
             PoetryCache.put(CommonConst.WEB_INFO, list.get(0));
         }
-        return PoetryResult.success();
+        return UResult.success();
     }
 
 
@@ -85,7 +85,7 @@ public class WebInfoController {
      * 获取网站信息
      */
     @GetMapping("/getWebInfo")
-    public PoetryResult<WebInfo> getWebInfo() {
+    public UResult<WebInfo> getWebInfo() {
         WebInfo webInfo = (WebInfo) PoetryCache.get(CommonConst.WEB_INFO);
         if (webInfo != null) {
             WebInfo result = new WebInfo();
@@ -97,9 +97,9 @@ public class WebInfoController {
 
             webInfo.setHistoryAllCount(((Long) ((Map<String, Object>) PoetryCache.get(CommonConst.IP_HISTORY_STATISTICS)).get(CommonConst.IP_HISTORY_COUNT)).toString());
             webInfo.setHistoryDayCount(Integer.toString(((List<Map<String, Object>>) ((Map<String, Object>) PoetryCache.get(CommonConst.IP_HISTORY_STATISTICS)).get(CommonConst.IP_HISTORY_HOUR)).size()));
-            return PoetryResult.success(result);
+            return UResult.success(result);
         }
-        return PoetryResult.success();
+        return UResult.success();
     }
 
     /**
@@ -107,7 +107,7 @@ public class WebInfoController {
      */
     @LoginCheck(0)
     @GetMapping("/getHistoryInfo")
-    public PoetryResult<Map<String, Object>> getHistoryInfo() {
+    public UResult<Map<String, Object>> getHistoryInfo() {
         Map<String, Object> result = new HashMap<>();
 
         Map<String, Object> history = (Map<String, Object>) PoetryCache.get(CommonConst.IP_HISTORY_STATISTICS);
@@ -164,27 +164,27 @@ public class WebInfoController {
 
         result.put("province_today", list);
 
-        return PoetryResult.success(result);
+        return UResult.success(result);
     }
 
     /**
      * 获取赞赏
      */
     @GetMapping("/getAdmire")
-    public PoetryResult<List<User>> getAdmire() {
-        return PoetryResult.success(commonQuery.getAdmire());
+    public UResult<List<User>> getAdmire() {
+        return UResult.success(commonQuery.getAdmire());
     }
 
     /**
      * 获取分类标签信息
      */
     @GetMapping("/getSortInfo")
-    public PoetryResult<List<Sort>> getSortInfo() {
+    public UResult<List<Sort>> getSortInfo() {
         List<Sort> sortInfo = (List<Sort>) PoetryCache.get(CommonConst.SORT_INFO);
         if (sortInfo != null) {
-            return PoetryResult.success(sortInfo);
+            return UResult.success(sortInfo);
         }
-        return PoetryResult.success();
+        return UResult.success();
     }
 
     /**
@@ -205,9 +205,9 @@ public class WebInfoController {
      */
     @LoginCheck(0)
     @PostMapping("/saveResourcePath")
-    public PoetryResult saveResourcePath(@RequestBody ResourcePathVO resourcePathVO) {
+    public UResult saveResourcePath(@RequestBody ResourcePathVO resourcePathVO) {
         if (!StringUtils.hasText(resourcePathVO.getTitle()) || !StringUtils.hasText(resourcePathVO.getType())) {
-            return PoetryResult.fail("标题和资源类型不能为空！");
+            return UResult.fail("标题和资源类型不能为空！");
         }
         if (CommonConst.RESOURCE_PATH_TYPE_LOVE_PHOTO.equals(resourcePathVO.getType())) {
             resourcePathVO.setRemark(PoetryUtil.getAdminUser().getId().toString());
@@ -227,7 +227,7 @@ public class WebInfoController {
 
         }
         resourcePathMapper.insert(resourcePath);
-        return PoetryResult.success();
+        return UResult.success();
     }
 
     /**
@@ -236,10 +236,10 @@ public class WebInfoController {
 //    @LoginCheck
     @PostMapping("/saveFriend")
     @SaveCheck
-    public PoetryResult saveFriend(@RequestBody ResourcePathVO resourcePathVO) {
+    public UResult saveFriend(@RequestBody ResourcePathVO resourcePathVO) {
         if (!StringUtils.hasText(resourcePathVO.getTitle()) || !StringUtils.hasText(resourcePathVO.getCover()) ||
                 !StringUtils.hasText(resourcePathVO.getUrl()) || !StringUtils.hasText(resourcePathVO.getIntroduction())) {
-            return PoetryResult.fail("信息不全！");
+            return UResult.fail("信息不全！");
         }
         FriendBlog friendBlog=new FriendBlog();
         friendBlog.setTitle(resourcePathVO.getTitle());
@@ -249,7 +249,7 @@ public class WebInfoController {
         friendBlog.setState(1);
         friendBlog.setClassify("技术博主");
         friendBlogMapper.insert(friendBlog);
-        return PoetryResult.success();
+        return UResult.success();
 
 
 //        ResourcePath friend = new ResourcePath();
@@ -262,14 +262,14 @@ public class WebInfoController {
 //        friend.setType(CommonConst.RESOURCE_PATH_TYPE_FRIEND);
 //        friend.setStatus(Boolean.FALSE);
 //        resourcePathMapper.insert(friend);
-//        return PoetryResult.success();
+//        return UResult.success();
     }
 
     /**
      * 查询友链
      */
     @GetMapping("/listFriend")
-    public PoetryResult<Map<String, List<FriendBlog>>> listFriend() {
+    public UResult<Map<String, List<FriendBlog>>> listFriend() {
         LambdaQueryChainWrapper<FriendBlog> wrapper=new LambdaQueryChainWrapper<>(friendBlogMapper);
         List<FriendBlog> friendBlogs = wrapper.eq(FriendBlog::getState, 1).orderByAsc(FriendBlog::getCreatetime).list();
 
@@ -296,7 +296,7 @@ public class WebInfoController {
 //                return resourcePathVO;
 //            }).collect(Collectors.groupingBy(ResourcePathVO::getClassify));
 //        }
-        return PoetryResult.success(collect);
+        return UResult.success(collect);
     }
 
 
@@ -305,9 +305,9 @@ public class WebInfoController {
      */
     @GetMapping("/deleteResourcePath")
     @LoginCheck(0)
-    public PoetryResult deleteResourcePath(@RequestParam("id") Integer id) {
+    public UResult deleteResourcePath(@RequestParam("id") Integer id) {
         resourcePathMapper.deleteById(id);
-        return PoetryResult.success();
+        return UResult.success();
     }
 
 
@@ -316,12 +316,12 @@ public class WebInfoController {
      */
     @PostMapping("/updateResourcePath")
     @LoginCheck(0)
-    public PoetryResult updateResourcePath(@RequestBody ResourcePathVO resourcePathVO) {
+    public UResult updateResourcePath(@RequestBody ResourcePathVO resourcePathVO) {
         if (!StringUtils.hasText(resourcePathVO.getTitle()) || !StringUtils.hasText(resourcePathVO.getType())) {
-            return PoetryResult.fail("标题和资源类型不能为空！");
+            return UResult.fail("标题和资源类型不能为空！");
         }
         if (resourcePathVO.getId() == null) {
-            return PoetryResult.fail("Id不能为空！");
+            return UResult.fail("Id不能为空！");
         }
         if (CommonConst.RESOURCE_PATH_TYPE_LOVE_PHOTO.equals(resourcePathVO.getType())) {
             resourcePathVO.setRemark(PoetryUtil.getAdminUser().getId().toString());
@@ -329,7 +329,7 @@ public class WebInfoController {
         ResourcePath resourcePath = new ResourcePath();
         BeanUtils.copyProperties(resourcePathVO, resourcePath);
         resourcePathMapper.updateById(resourcePath);
-        return PoetryResult.success();
+        return UResult.success();
     }
 
 
@@ -337,7 +337,7 @@ public class WebInfoController {
      * 查询资源
      */
     @PostMapping("/listResourcePath")
-    public PoetryResult<Page> listResourcePath(@RequestBody BaseRequestVO baseRequestVO) {
+    public UResult<Page> listResourcePath(@RequestBody BaseRequestVO baseRequestVO) {
         LambdaQueryChainWrapper<ResourcePath> wrapper = new LambdaQueryChainWrapper<>(resourcePathMapper);
         wrapper.eq(StringUtils.hasText(baseRequestVO.getResourceType()), ResourcePath::getType, baseRequestVO.getResourceType());
         wrapper.eq(StringUtils.hasText(baseRequestVO.getClassify()), ResourcePath::getClassify, baseRequestVO.getClassify());
@@ -367,7 +367,7 @@ public class WebInfoController {
             }).collect(Collectors.toList());
             baseRequestVO.setRecords(resourcePathVOs);
         }
-        return PoetryResult.success(baseRequestVO);
+        return UResult.success(baseRequestVO);
     }
 
 
@@ -375,22 +375,22 @@ public class WebInfoController {
      * 查询音乐
      */
     @GetMapping("/listFunny")
-    public PoetryResult<List<Map<String, Object>>> listFunny() {
+    public UResult<List<Map<String, Object>>> listFunny() {
         QueryWrapper<ResourcePath> queryWrapper = new QueryWrapper<>();
         queryWrapper.select("classify, count(*) as count")
                 .eq("status", Boolean.TRUE)
                 .eq("type", CommonConst.RESOURCE_PATH_TYPE_FUNNY)
                 .groupBy("classify");
         List<Map<String, Object>> maps = resourcePathMapper.selectMaps(queryWrapper);
-        return PoetryResult.success(maps);
+        return UResult.success(maps);
     }
 
     @GetMapping("/listPhoto")
-    public PoetryResult<List<Map<String,Object>>> listPhoto(){
+    public UResult<List<Map<String,Object>>> listPhoto(){
         QueryWrapper<ResourcePath> queryWrapper=new QueryWrapper<>();
         queryWrapper.eq("type",CommonConst.RESOURCE_PATH_TYPE_PHOTO);
         List<Map<String, Object>> maps = resourcePathMapper.selectMaps(queryWrapper);
-        return PoetryResult.success(maps);
+        return UResult.success(maps);
     }
 
 
@@ -399,7 +399,7 @@ public class WebInfoController {
      * 查询收藏
      */
     @GetMapping("/listCollect")
-    public PoetryResult<Map<String, List<ResourcePathVO>>> listCollect() {
+    public UResult<Map<String, List<ResourcePathVO>>> listCollect() {
         LambdaQueryChainWrapper<ResourcePath> wrapper = new LambdaQueryChainWrapper<>(resourcePathMapper);
         List<ResourcePath> resourcePaths = wrapper.eq(ResourcePath::getType, CommonConst.RESOURCE_PATH_TYPE_FAVORITES)
                 .eq(ResourcePath::getStatus, Boolean.TRUE)
@@ -413,7 +413,7 @@ public class WebInfoController {
                 return resourcePathVO;
             }).collect(Collectors.groupingBy(ResourcePathVO::getClassify));
         }
-        return PoetryResult.success(collect);
+        return UResult.success(collect);
     }
 
 
@@ -423,10 +423,10 @@ public class WebInfoController {
     @LoginCheck
     @SaveCheck
     @PostMapping("/saveFunny")
-    public PoetryResult saveFunny(@RequestBody ResourcePathVO resourcePathVO) {
+    public UResult saveFunny(@RequestBody ResourcePathVO resourcePathVO) {
         if (!StringUtils.hasText(resourcePathVO.getClassify()) || !StringUtils.hasText(resourcePathVO.getCover()) ||
                 !StringUtils.hasText(resourcePathVO.getUrl()) || !StringUtils.hasText(resourcePathVO.getTitle())) {
-            return PoetryResult.fail("信息不全！");
+            return UResult.fail("信息不全！");
         }
         ResourcePath funny = new ResourcePath();
         funny.setClassify(resourcePathVO.getClassify());
@@ -436,14 +436,14 @@ public class WebInfoController {
         funny.setType(CommonConst.RESOURCE_PATH_TYPE_FUNNY);
         funny.setStatus(Boolean.FALSE);
         resourcePathMapper.insert(funny);
-        return PoetryResult.success();
+        return UResult.success();
     }
 
     /**
      * 查询爱情
      */
     @GetMapping("/listAdminLovePhoto")
-    public PoetryResult<List<Map<String, Object>>> listAdminLovePhoto() {
+    public UResult<List<Map<String, Object>>> listAdminLovePhoto() {
         QueryWrapper<ResourcePath> queryWrapper = new QueryWrapper<>();
         queryWrapper.select("classify, count(*) as count")
                 .eq("status", Boolean.TRUE)
@@ -451,7 +451,7 @@ public class WebInfoController {
                 .eq("type", CommonConst.RESOURCE_PATH_TYPE_LOVE_PHOTO)
                 .groupBy("classify");
         List<Map<String, Object>> maps = resourcePathMapper.selectMaps(queryWrapper);
-        return PoetryResult.success(maps);
+        return UResult.success(maps);
     }
 
     /**
@@ -460,10 +460,10 @@ public class WebInfoController {
     @LoginCheck
     @SaveCheck
     @PostMapping("/saveLovePhoto")
-    public PoetryResult saveLovePhoto(@RequestBody ResourcePathVO resourcePathVO) {
+    public UResult saveLovePhoto(@RequestBody ResourcePathVO resourcePathVO) {
         if (!StringUtils.hasText(resourcePathVO.getClassify()) || !StringUtils.hasText(resourcePathVO.getCover()) ||
                 !StringUtils.hasText(resourcePathVO.getTitle())) {
-            return PoetryResult.fail("信息不全！");
+            return UResult.fail("信息不全！");
         }
         ResourcePath lovePhoto = new ResourcePath();
         lovePhoto.setClassify(resourcePathVO.getClassify());
@@ -473,7 +473,7 @@ public class WebInfoController {
         lovePhoto.setType(CommonConst.RESOURCE_PATH_TYPE_LOVE_PHOTO);
         lovePhoto.setStatus(Boolean.FALSE);
         resourcePathMapper.insert(lovePhoto);
-        return PoetryResult.success();
+        return UResult.success();
     }
 
     /**
@@ -481,15 +481,15 @@ public class WebInfoController {
      */
     @PostMapping("/saveTreeHole")
     @SaveCheck
-    public PoetryResult<TreeHole> saveTreeHole(@RequestBody TreeHole treeHole) {
+    public UResult<TreeHole> saveTreeHole(@RequestBody TreeHole treeHole) {
         if (!StringUtils.hasText(treeHole.getMessage())) {
-            return PoetryResult.fail("留言不能为空！");
+            return UResult.fail("留言不能为空！");
         }
         treeHoleMapper.insert(treeHole);
         if (!StringUtils.hasText(treeHole.getAvatar())) {
             treeHole.setAvatar(PoetryUtil.getRandomAvatar(null));
         }
-        return PoetryResult.success(treeHole);
+        return UResult.success(treeHole);
     }
 
 
@@ -498,9 +498,9 @@ public class WebInfoController {
      */
     @GetMapping("/deleteTreeHole")
     @LoginCheck(0)
-    public PoetryResult deleteTreeHole(@RequestParam("id") Integer id) {
+    public UResult deleteTreeHole(@RequestParam("id") Integer id) {
         treeHoleMapper.deleteById(id);
-        return PoetryResult.success();
+        return UResult.success();
     }
 
 
@@ -508,7 +508,7 @@ public class WebInfoController {
      * 查询List
      */
     @GetMapping("/listTreeHole")
-    public PoetryResult<List<TreeHole>> listTreeHole() {
+    public UResult<List<TreeHole>> listTreeHole() {
         List<TreeHole> treeHoles;
         Integer count = new LambdaQueryChainWrapper<>(treeHoleMapper).count();
         if (count > CommonConst.TREE_HOLE_COUNT) {
@@ -523,7 +523,7 @@ public class WebInfoController {
                 treeHole.setAvatar(PoetryUtil.getRandomAvatar(treeHole.getId().toString()));
             }
         });
-        return PoetryResult.success(treeHoles);
+        return UResult.success(treeHoles);
     }
 
 
@@ -532,13 +532,13 @@ public class WebInfoController {
      */
     @PostMapping("/saveSort")
     @LoginCheck(0)
-    public PoetryResult saveSort(@RequestBody Sort sort) {
+    public UResult saveSort(@RequestBody Sort sort) {
         if (!StringUtils.hasText(sort.getSortName()) || !StringUtils.hasText(sort.getSortDescription())) {
-            return PoetryResult.fail("分类名称和分类描述不能为空！");
+            return UResult.fail("分类名称和分类描述不能为空！");
         }
 
         if (sort.getSortType() != null && sort.getSortType() == PoetryEnum.SORT_TYPE_BAR.getCode() && sort.getPriority() == null) {
-            return PoetryResult.fail("导航栏分类必须配置优先级！");
+            return UResult.fail("导航栏分类必须配置优先级！");
         }
 
         sortMapper.insert(sort);
@@ -546,7 +546,7 @@ public class WebInfoController {
         if (!CollectionUtils.isEmpty(sortInfo)) {
             PoetryCache.put(CommonConst.SORT_INFO, sortInfo);
         }
-        return PoetryResult.success();
+        return UResult.success();
     }
 
 
@@ -555,13 +555,13 @@ public class WebInfoController {
      */
     @GetMapping("/deleteSort")
     @LoginCheck(0)
-    public PoetryResult deleteSort(@RequestParam("id") Integer id) {
+    public UResult deleteSort(@RequestParam("id") Integer id) {
         sortMapper.deleteById(id);
         List<Sort> sortInfo = commonQuery.getSortInfo();
         if (!CollectionUtils.isEmpty(sortInfo)) {
             PoetryCache.put(CommonConst.SORT_INFO, sortInfo);
         }
-        return PoetryResult.success();
+        return UResult.success();
     }
 
 
@@ -570,13 +570,13 @@ public class WebInfoController {
      */
     @PostMapping("/updateSort")
     @LoginCheck(0)
-    public PoetryResult updateSort(@RequestBody Sort sort) {
+    public UResult updateSort(@RequestBody Sort sort) {
         sortMapper.updateById(sort);
         List<Sort> sortInfo = commonQuery.getSortInfo();
         if (!CollectionUtils.isEmpty(sortInfo)) {
             PoetryCache.put(CommonConst.SORT_INFO, sortInfo);
         }
-        return PoetryResult.success();
+        return UResult.success();
     }
 
 
@@ -584,8 +584,8 @@ public class WebInfoController {
      * 查询List
      */
     @GetMapping("/listSort")
-    public PoetryResult<List<Sort>> listSort() {
-        return PoetryResult.success(new LambdaQueryChainWrapper<>(sortMapper).list());
+    public UResult<List<Sort>> listSort() {
+        return UResult.success(new LambdaQueryChainWrapper<>(sortMapper).list());
     }
 
 
@@ -594,16 +594,16 @@ public class WebInfoController {
      */
     @PostMapping("/saveLabel")
     @LoginCheck(0)
-    public PoetryResult saveLabel(@RequestBody Label label) {
+    public UResult saveLabel(@RequestBody Label label) {
         if (!StringUtils.hasText(label.getLabelName()) || !StringUtils.hasText(label.getLabelDescription()) || label.getSortId() == null) {
-            return PoetryResult.fail("标签名称和标签描述和分类Id不能为空！");
+            return UResult.fail("标签名称和标签描述和分类Id不能为空！");
         }
         labelMapper.insert(label);
         List<Sort> sortInfo = commonQuery.getSortInfo();
         if (!CollectionUtils.isEmpty(sortInfo)) {
             PoetryCache.put(CommonConst.SORT_INFO, sortInfo);
         }
-        return PoetryResult.success();
+        return UResult.success();
     }
 
 
@@ -612,13 +612,13 @@ public class WebInfoController {
      */
     @GetMapping("/deleteLabel")
     @LoginCheck(0)
-    public PoetryResult deleteLabel(@RequestParam("id") Integer id) {
+    public UResult deleteLabel(@RequestParam("id") Integer id) {
         labelMapper.deleteById(id);
         List<Sort> sortInfo = commonQuery.getSortInfo();
         if (!CollectionUtils.isEmpty(sortInfo)) {
             PoetryCache.put(CommonConst.SORT_INFO, sortInfo);
         }
-        return PoetryResult.success();
+        return UResult.success();
     }
 
 
@@ -627,13 +627,13 @@ public class WebInfoController {
      */
     @PostMapping("/updateLabel")
     @LoginCheck(0)
-    public PoetryResult updateLabel(@RequestBody Label label) {
+    public UResult updateLabel(@RequestBody Label label) {
         labelMapper.updateById(label);
         List<Sort> sortInfo = commonQuery.getSortInfo();
         if (!CollectionUtils.isEmpty(sortInfo)) {
             PoetryCache.put(CommonConst.SORT_INFO, sortInfo);
         }
-        return PoetryResult.success();
+        return UResult.success();
     }
 
 
@@ -641,8 +641,8 @@ public class WebInfoController {
      * 查询List
      */
     @GetMapping("/listLabel")
-    public PoetryResult<List<Label>> listLabel() {
-        return PoetryResult.success(new LambdaQueryChainWrapper<>(labelMapper).list());
+    public UResult<List<Label>> listLabel() {
+        return UResult.success(new LambdaQueryChainWrapper<>(labelMapper).list());
     }
 
 
@@ -650,11 +650,11 @@ public class WebInfoController {
      * 查询List
      */
     @GetMapping("/listSortAndLabel")
-    public PoetryResult<Map> listSortAndLabel() {
+    public UResult<Map> listSortAndLabel() {
         Map<String, List> map = new HashMap<>();
         map.put("sorts", new LambdaQueryChainWrapper<>(sortMapper).list());
         map.put("labels", new LambdaQueryChainWrapper<>(labelMapper).list());
-        return PoetryResult.success(map);
+        return UResult.success(map);
     }
 }
 

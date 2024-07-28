@@ -1,7 +1,7 @@
 package com.ld.poetry.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.ld.poetry.config.PoetryResult;
+import com.ld.poetry.config.UResult;
 import com.ld.poetry.entity.Article;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.ld.poetry.vo.ArticleVO;
@@ -13,19 +13,19 @@ import java.util.Map;
 
 public interface ArticleService extends IService<Article> {
 
-    PoetryResult saveArticle(ArticleVO articleVO);
+    UResult saveArticle(ArticleVO articleVO);
 
-    PoetryResult deleteArticle(Integer id);
+    UResult deleteArticle(Integer id);
 
-    PoetryResult updateArticle(ArticleVO articleVO);
+    UResult updateArticle(ArticleVO articleVO);
 
-    PoetryResult<Page> listArticle(BaseRequestVO baseRequestVO);
+    UResult<Page> listArticle(BaseRequestVO baseRequestVO);
 
-    PoetryResult<ArticleVO> getArticleById(Integer id, String password);
+    UResult<ArticleVO> getArticleById(Integer id, String password);
 
-    PoetryResult<Page> listAdminArticle(BaseRequestVO baseRequestVO, Boolean isBoss);
+    UResult<Page> listAdminArticle(BaseRequestVO baseRequestVO, Boolean isBoss);
 
-    PoetryResult<ArticleVO> getArticleByIdForUser(Integer id);
+    UResult<ArticleVO> getArticleByIdForUser(Integer id);
 
-    PoetryResult<Map<Integer, List<ArticleVO>>> listSortArticle();
+    UResult<Map<Integer, List<ArticleVO>>> listSortArticle();
 }

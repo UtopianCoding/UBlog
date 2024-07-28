@@ -1,7 +1,7 @@
 package com.ld.poetry.controller;
 
 
-import com.ld.poetry.config.PoetryResult;
+import com.ld.poetry.config.UResult;
 import com.ld.poetry.entity.Distance;
 import com.ld.poetry.service.StatService;
 
@@ -29,9 +29,9 @@ public class StatController {
      * @return
      */
     @GetMapping("/blogStat")
-    public PoetryResult   blogStat(){
+    public UResult   blogStat(){
         List<Map<String,Object>> blogStat =statService.blogStat();
-        return  PoetryResult.success(blogStat);
+        return  UResult.success(blogStat);
 
     }
 
@@ -40,9 +40,9 @@ public class StatController {
      * @return
      */
     @GetMapping("/labelStat")
-    public PoetryResult   labelStat(){
+    public UResult   labelStat(){
         List<Map<String,Object>> labelStat =statService.labelStat();
-        return  PoetryResult.success(labelStat);
+        return  UResult.success(labelStat);
 
     }
 
@@ -51,16 +51,16 @@ public class StatController {
      * @return
      */
     @GetMapping("/classifyStat")
-    public PoetryResult   classifyStat(){
+    public UResult   classifyStat(){
         List<Map<String,Object>> classifyStat =statService.classifyStat();
-        return  PoetryResult.success(classifyStat);
+        return  UResult.success(classifyStat);
 
     }
 
     @GetMapping("/distances")
-    public PoetryResult getDistance(){
+    public UResult getDistance(){
         Distance distance=statService.getDistances();
-        return PoetryResult.success(distance);
+        return UResult.success(distance);
     }
 
 

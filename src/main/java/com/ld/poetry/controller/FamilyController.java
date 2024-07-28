@@ -3,7 +3,7 @@ package com.ld.poetry.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ld.poetry.config.LoginCheck;
-import com.ld.poetry.config.PoetryResult;
+import com.ld.poetry.config.UResult;
 import com.ld.poetry.entity.Family;
 import com.ld.poetry.service.FamilyService;
 import com.ld.poetry.utils.CommonConst;
@@ -38,7 +38,7 @@ public class FamilyController {
      */
     @PostMapping("/saveFamily")
     @LoginCheck
-    public PoetryResult saveFamily(@Validated @RequestBody FamilyVO familyVO) {
+    public UResult saveFamily(@Validated @RequestBody FamilyVO familyVO) {
         Integer userId = PoetryUtil.getUserId();
         familyVO.setUserId(userId);
         Family oldFamily = familyService.lambdaQuery().select(Family::getId).eq(Family::getUserId, userId).one();
@@ -56,7 +56,7 @@ public class FamilyController {
             PoetryCache.put(CommonConst.ADMIN_FAMILY, family);
         }
         PoetryCache.remove(CommonConst.FAMILY_LIST);
-        return PoetryResult.success();
+        return UResult.success();
     }
 
     /**
@@ -64,10 +64,10 @@ public class FamilyController {
      */
     @GetMapping("/deleteFamily")
     @LoginCheck(0)
-    public PoetryResult deleteFamily(@RequestParam("id") Integer id) {
+    public UResult deleteFamily(@RequestParam("id") Integer id) {
         familyService.removeById(id);
         PoetryCache.remove(CommonConst.FAMILY_LIST);
-        return PoetryResult.success();
+        return UResult.success();
     }
 
     /**
@@ -75,15 +75,15 @@ public class FamilyController {
      */
     @GetMapping("/getFamily")
     @LoginCheck
-    public PoetryResult<FamilyVO> getFamily() {
+    public UResult<FamilyVO> getFamily() {
         Integer userId = PoetryUtil.getUserId();
         Family family = familyService.lambdaQuery().eq(Family::getUserId, userId).one();
         if (family == null) {
-            return PoetryResult.success();
+            return UResult.success();
         } else {
             FamilyVO familyVO = new FamilyVO();
             BeanUtils.copyProperties(family, familyVO);
-            return PoetryResult.success(familyVO);
+            return UResult.success(familyVO);
         }
     }
 
@@ -91,27 +91,27 @@ public class FamilyController {
      * 获取
      */
     @GetMapping("/getAdminFamily")
-    public PoetryResult<FamilyVO> getAdminFamily() {
+    public UResult<FamilyVO> getAdminFamily() {
         Family family = (Family) PoetryCache.get(CommonConst.ADMIN_FAMILY);
 //        if (family == null) {
-//            return PoetryResult.fail("请根据文档【https://poetize.cn/article?id=26】初始化表白墙");
+//            return UResult.fail("请根据文档【https://poetize.cn/article?id=26】初始化表白墙");
 //        }
         FamilyVO familyVO = new FamilyVO();
         BeanUtils.copyProperties(family, familyVO);
-        return PoetryResult.success(familyVO);
+        return UResult.success(familyVO);
     }
 
     /**
      * 查询随机家庭
      */
     @GetMapping("/listRandomFamily")
-    public PoetryResult<List<FamilyVO>> listRandomFamily(@RequestParam(value = "size", defaultValue = "10") Integer size) {
+    public UResult<List<FamilyVO>> listRandomFamily(@RequestParam(value = "size", defaultValue = "10") Integer size) {
         List<FamilyVO> familyList = commonQuery.getFamilyList();
         if (familyList.size() > size) {
             Collections.shuffle(familyList);
             familyList = familyList.subList(0, size);
         }
-        return PoetryResult.success(familyList);
+        return UResult.success(familyList);
     }
 
     /**
@@ -119,11 +119,11 @@ public class FamilyController {
      */
     @PostMapping("/listFamily")
     @LoginCheck(0)
-    public PoetryResult<Page> listFamily(@RequestBody BaseRequestVO baseRequestVO) {
+    public UResult<Page> listFamily(@RequestBody BaseRequestVO baseRequestVO) {
         familyService.lambdaQuery()
                 .eq(baseRequestVO.getStatus() != null, Family::getStatus, baseRequestVO.getStatus())
                 .orderByDesc(Family::getCreateTime).page(baseRequestVO);
-        return PoetryResult.success(baseRequestVO);
+        return UResult.success(baseRequestVO);
     }
 
     /**
@@ -131,9 +131,9 @@ public class FamilyController {
      */
     @GetMapping("/changeLoveStatus")
     @LoginCheck(0)
-    public PoetryResult changeLoveStatus(@RequestParam("id") Integer id, @RequestParam("flag") Boolean flag) {
+    public UResult changeLoveStatus(@RequestParam("id") Integer id, @RequestParam("flag") Boolean flag) {
         familyService.lambdaUpdate().eq(Family::getId, id).set(Family::getStatus, flag).update();
         PoetryCache.remove(CommonConst.FAMILY_LIST);
-        return PoetryResult.success();
+        return UResult.success();
     }
 }

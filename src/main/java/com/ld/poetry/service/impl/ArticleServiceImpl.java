@@ -9,7 +9,7 @@ import com.baomidou.mybatisplus.extension.conditions.update.LambdaUpdateChainWra
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ld.poetry.auto.AbstractArticle;
-import com.ld.poetry.config.PoetryResult;
+import com.ld.poetry.config.UResult;
 import com.ld.poetry.dao.ArticleMapper;
 import com.ld.poetry.dao.LabelMapper;
 import com.ld.poetry.dao.SortMapper;
@@ -56,9 +56,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     private String subscribeFormat;
 
     @Override
-    public PoetryResult saveArticle(ArticleVO articleVO) {
+    public UResult saveArticle(ArticleVO articleVO) {
         if (articleVO.getViewStatus() != null && !articleVO.getViewStatus() && !StringUtils.hasText(articleVO.getPassword())) {
-            return PoetryResult.fail("请设置文章密码！");
+            return UResult.fail("请设置文章密码！");
         }
         Article article = new Article();
         if (StringUtils.hasText(articleVO.getArticleCover())) {
@@ -103,7 +103,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         } catch (Exception e) {
             log.error("订阅邮件发送失败：", e);
         }
-        return PoetryResult.success();
+        return UResult.success();
     }
 
     private String getSubscribeMail(String labelName, String articleTitle) {
@@ -119,7 +119,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     }
 
     @Override
-    public PoetryResult deleteArticle(Integer id) {
+    public UResult deleteArticle(Integer id) {
         Integer userId = PoetryUtil.getUserId();
         lambdaUpdate().eq(Article::getId, id)
                 .eq(Article::getUserId, userId)
@@ -128,13 +128,13 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         if (!CollectionUtils.isEmpty(sortInfo)) {
             PoetryCache.put(CommonConst.SORT_INFO, sortInfo);
         }
-        return PoetryResult.success();
+        return UResult.success();
     }
 
     @Override
-    public PoetryResult updateArticle(ArticleVO articleVO) {
+    public UResult updateArticle(ArticleVO articleVO) {
         if (articleVO.getViewStatus() != null && !articleVO.getViewStatus() && !StringUtils.hasText(articleVO.getPassword())) {
-            return PoetryResult.fail("请设置文章密码！");
+            return UResult.fail("请设置文章密码！");
         }
 
         Integer userId = PoetryUtil.getUserId();
@@ -171,11 +171,11 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         if (!CollectionUtils.isEmpty(sortInfo)) {
             PoetryCache.put(CommonConst.SORT_INFO, sortInfo);
         }
-        return PoetryResult.success();
+        return UResult.success();
     }
 
 //    @Override
-//    public PoetryResult<Page> listArticle(BaseRequestVO baseRequestVO) {
+//    public UResult<Page> listArticle(BaseRequestVO baseRequestVO) {
 //        List<Integer> ids = null;
 //        List<List<Integer>> idList = null;
 //        if (StringUtils.hasText(baseRequestVO.getArticleSearch())) {
@@ -183,7 +183,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 //            ids = idList.stream().flatMap(Collection::stream).collect(Collectors.toList());
 //            if (CollectionUtils.isEmpty(ids)) {
 //                baseRequestVO.setRecords(new ArrayList<>());
-//                return PoetryResult.success(baseRequestVO);
+//                return UResult.success(baseRequestVO);
 //            }
 //        }
 //
@@ -230,26 +230,26 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 //            collect.addAll(contents);
 //            baseRequestVO.setRecords(collect);
 //        }
-//        return PoetryResult.success(baseRequestVO);
+//        return UResult.success(baseRequestVO);
 //    }
 
     @Override
-    public PoetryResult<ArticleVO> getArticleById(Integer id, String password) {
+    public UResult<ArticleVO> getArticleById(Integer id, String password) {
         LambdaQueryChainWrapper<Article> lambdaQuery = lambdaQuery();
         lambdaQuery.eq(Article::getId, id);
 
         Article article = lambdaQuery.one();
         if (article == null) {
-            return PoetryResult.success();
+            return UResult.success();
         }
         if (!article.getViewStatus() && (!StringUtils.hasText(password) || !password.equals(article.getPassword()))) {
-            return PoetryResult.fail("密码错误" + (StringUtils.hasText(article.getTips()) ? article.getTips() : "请联系作者获取密码"));
+            return UResult.fail("密码错误" + (StringUtils.hasText(article.getTips()) ? article.getTips() : "请联系作者获取密码"));
         }
         article.setPassword(null);
         articleMapper.updateViewCount(id);
         ArticleVO articleVO = buildArticleVO(article, false);
         if (StringUtil.isNotEmpty(articleVO.getAbstractArticle())){
-            return PoetryResult.success(articleVO);
+            return UResult.success(articleVO);
 
         }else{
             String regex = "https?://|\\*|#|`";
@@ -263,14 +263,14 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             articleVO.setAbstractArticle(abart);
             article.setAbstractArticle(abart);
             articleMapper.updateById(article);
-            return PoetryResult.success(articleVO);
+            return UResult.success(articleVO);
         }
 
 
     }
 
     @Override
-    public PoetryResult<Page> listAdminArticle(BaseRequestVO baseRequestVO, Boolean isBoss) {
+    public UResult<Page> listAdminArticle(BaseRequestVO baseRequestVO, Boolean isBoss) {
         LambdaQueryChainWrapper<Article> lambdaQuery = lambdaQuery();
         lambdaQuery.select(Article.class, a -> !a.getColumn().equals("article_content"));
         if (!isBoss) {
@@ -306,27 +306,27 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             }).collect(Collectors.toList());
             baseRequestVO.setRecords(collect);
         }
-        return PoetryResult.success(baseRequestVO);
+        return UResult.success(baseRequestVO);
     }
 
     @Override
-    public PoetryResult<ArticleVO> getArticleByIdForUser(Integer id) {
+    public UResult<ArticleVO> getArticleByIdForUser(Integer id) {
         LambdaQueryChainWrapper<Article> lambdaQuery = lambdaQuery();
         lambdaQuery.eq(Article::getId, id).eq(Article::getUserId, PoetryUtil.getUserId());
         Article article = lambdaQuery.one();
         if (article == null) {
-            return PoetryResult.fail("文章不存在！");
+            return UResult.fail("文章不存在！");
         }
         ArticleVO articleVO = new ArticleVO();
         BeanUtils.copyProperties(article, articleVO);
-        return PoetryResult.success(articleVO);
+        return UResult.success(articleVO);
     }
 
     @Override
-    public PoetryResult<Map<Integer, List<ArticleVO>>> listSortArticle() {
+    public UResult<Map<Integer, List<ArticleVO>>> listSortArticle() {
         Map<Integer, List<ArticleVO>> result = (Map<Integer, List<ArticleVO>>) PoetryCache.get(CommonConst.SORT_ARTICLE_LIST);
         if (result != null) {
-            return PoetryResult.success(result);
+            return UResult.success(result);
         }
 
         Map<Integer, List<ArticleVO>> map = new HashMap<>();
@@ -354,7 +354,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         }
 
         PoetryCache.put(CommonConst.SORT_ARTICLE_LIST, map, CommonConst.TOKEN_INTERVAL);
-        return PoetryResult.success(map);
+        return UResult.success(map);
     }
 
     private ArticleVO buildArticleVO(Article article, Boolean isAdmin) {
@@ -404,7 +404,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         return articleVO;
     }
     @Override
-    public PoetryResult<Page> listArticle(BaseRequestVO baseRequestVO) {
+    public UResult<Page> listArticle(BaseRequestVO baseRequestVO) {
         List<Integer> ids = null;
         List<List<Integer>> idList = null;
         if (StringUtils.hasText(baseRequestVO.getArticleSearch())) {
@@ -412,7 +412,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             ids = idList.stream().flatMap(Collection::stream).collect(Collectors.toList());
             if (CollectionUtils.isEmpty(ids)) {
                 baseRequestVO.setRecords(new ArrayList<>());
-                return PoetryResult.success(baseRequestVO);
+                return UResult.success(baseRequestVO);
             }
         }
 
@@ -460,6 +460,6 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             collect.addAll(contents);
             baseRequestVO.setRecords(collect);
         }
-        return PoetryResult.success(baseRequestVO);
+        return UResult.success(baseRequestVO);
     }
 }

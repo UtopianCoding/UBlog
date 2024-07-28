@@ -1,7 +1,7 @@
 package com.ld.poetry.controller;
 
 import com.ld.poetry.config.LoginCheck;
-import com.ld.poetry.config.PoetryResult;
+import com.ld.poetry.config.UResult;
 import com.ld.poetry.config.SaveCheck;
 import com.ld.poetry.utils.storage.QiniuUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +28,7 @@ public class QiniuController {
     @GetMapping("/getUpToken")
     @LoginCheck
     @SaveCheck
-    public PoetryResult<String> getUpToken(@RequestParam(value = "key") String key) {
-        return PoetryResult.success(qiniuUtil.getToken(key));
+    public UResult<String> getUpToken(@RequestParam(value = "key") String key) {
+        return UResult.success(qiniuUtil.getToken(key));
     }
 }

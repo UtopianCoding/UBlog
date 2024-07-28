@@ -2,7 +2,7 @@ package com.ld.poetry.controller;
 
 
 import com.ld.poetry.config.LoginCheck;
-import com.ld.poetry.config.PoetryResult;
+import com.ld.poetry.config.UResult;
 import com.ld.poetry.config.SaveCheck;
 import com.ld.poetry.service.CommentService;
 import com.ld.poetry.utils.CommonConst;
@@ -38,10 +38,10 @@ public class CommentController {
     @PostMapping("/saveComment")
     @LoginCheck
     @SaveCheck
-    public PoetryResult saveComment(@Validated @RequestBody CommentVO commentVO) {
+    public UResult saveComment(@Validated @RequestBody CommentVO commentVO) {
         String content = StringUtil.removeHtml(commentVO.getCommentContent());
         if (!StringUtils.hasText(content)) {
-            return PoetryResult.fail("评论内容不合法！");
+            return UResult.fail("评论内容不合法！");
         }
         commentVO.setCommentContent(content);
 
@@ -55,7 +55,7 @@ public class CommentController {
      */
     @GetMapping("/deleteComment")
     @LoginCheck
-    public PoetryResult deleteComment(@RequestParam("id") Integer id) {
+    public UResult deleteComment(@RequestParam("id") Integer id) {
         return commentService.deleteComment(id);
     }
 
@@ -64,8 +64,8 @@ public class CommentController {
      * 查询评论数量
      */
     @GetMapping("/getCommentCount")
-    public PoetryResult<Integer> getCommentCount(@RequestParam("source") Integer source, @RequestParam("type") String type) {
-        return PoetryResult.success(commonQuery.getCommentCount(source, type));
+    public UResult<Integer> getCommentCount(@RequestParam("source") Integer source, @RequestParam("type") String type) {
+        return UResult.success(commonQuery.getCommentCount(source, type));
     }
 
 
@@ -73,7 +73,7 @@ public class CommentController {
      * 查询评论
      */
     @PostMapping("/listComment")
-    public PoetryResult<BaseRequestVO> listComment(@RequestBody BaseRequestVO baseRequestVO) {
+    public UResult<BaseRequestVO> listComment(@RequestBody BaseRequestVO baseRequestVO) {
         return commentService.listComment(baseRequestVO);
     }
 }

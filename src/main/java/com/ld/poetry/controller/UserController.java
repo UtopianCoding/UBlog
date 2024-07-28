@@ -2,11 +2,11 @@ package com.ld.poetry.controller;
 
 
 import com.ld.poetry.config.LoginCheck;
-import com.ld.poetry.config.PoetryResult;
+import com.ld.poetry.config.UResult;
 import com.ld.poetry.config.SaveCheck;
 import com.ld.poetry.service.UserService;
 import com.ld.poetry.utils.CommonConst;
-import com.ld.poetry.utils.PoetryCache;
+import com.ld.poetry.utils.UCache;
 import com.ld.poetry.utils.PoetryUtil;
 import com.ld.poetry.vo.LoginVo;
 import com.ld.poetry.vo.UserVO;
@@ -31,7 +31,7 @@ public class UserController {
      * 用户名/密码注册
      */
     @PostMapping("/regist")
-    public PoetryResult<UserVO> regist(@Validated @RequestBody UserVO user) {
+    public UResult<UserVO> regist(@Validated @RequestBody UserVO user) {
         return userService.regist(user);
     }
 
@@ -40,7 +40,7 @@ public class UserController {
      * 用户名、邮箱、手机号/密码登录
      */
     @PostMapping("/login")
-    public PoetryResult<UserVO> login( @RequestBody LoginVo vo) {
+    public UResult<UserVO> login( @RequestBody LoginVo vo) {
         if (vo.getIsAdmin()==null){
             vo.setIsAdmin(false);
         }
@@ -52,7 +52,7 @@ public class UserController {
      * Token登录
      */
     @PostMapping("/token")
-    public PoetryResult<UserVO> login(@RequestParam("userToken") String userToken) {
+    public UResult<UserVO> login(@RequestParam("userToken") String userToken) {
         return userService.token(userToken);
     }
 
@@ -62,7 +62,7 @@ public class UserController {
      */
     @GetMapping("/logout")
     @LoginCheck
-    public PoetryResult exit() {
+    public UResult exit() {
         return userService.exit();
     }
 
@@ -72,8 +72,8 @@ public class UserController {
      */
     @PostMapping("/updateUserInfo")
     @LoginCheck
-    public PoetryResult<UserVO> updateUserInfo(@RequestBody UserVO user) {
-        PoetryCache.remove(CommonConst.USER_CACHE + PoetryUtil.getUserId().toString());
+    public UResult<UserVO> updateUserInfo(@RequestBody UserVO user) {
+        UCache.remove(CommonConst.USER_CACHE + PoetryUtil.getUserId().toString());
         return userService.updateUserInfo(user);
     }
 
@@ -86,7 +86,7 @@ public class UserController {
     @GetMapping("/getCode")
     @LoginCheck
     @SaveCheck
-    public PoetryResult getCode(@RequestParam("flag") Integer flag) {
+    public UResult getCode(@RequestParam("flag") Integer flag) {
         return userService.getCode(flag);
     }
 
@@ -99,7 +99,7 @@ public class UserController {
     @GetMapping("/getCodeForBind")
     @LoginCheck
     @SaveCheck
-    public PoetryResult getCodeForBind(@RequestParam("place") String place, @RequestParam("flag") Integer flag) {
+    public UResult getCodeForBind(@RequestParam("place") String place, @RequestParam("flag") Integer flag) {
         return userService.getCodeForBind(place, flag);
     }
 
@@ -112,8 +112,8 @@ public class UserController {
      */
     @PostMapping("/updateSecretInfo")
     @LoginCheck
-    public PoetryResult<UserVO> updateSecretInfo(@RequestParam("place") String place, @RequestParam("flag") Integer flag, @RequestParam(value = "code", required = false) String code, @RequestParam("password") String password) {
-        PoetryCache.remove(CommonConst.USER_CACHE + PoetryUtil.getUserId().toString());
+    public UResult<UserVO> updateSecretInfo(@RequestParam("place") String place, @RequestParam("flag") Integer flag, @RequestParam(value = "code", required = false) String code, @RequestParam("password") String password) {
+        UCache.remove(CommonConst.USER_CACHE + PoetryUtil.getUserId().toString());
         return userService.updateSecretInfo(place, flag, code, password);
     }
 
@@ -125,7 +125,7 @@ public class UserController {
      */
     @GetMapping("/getCodeForForgetPassword")
     @SaveCheck
-    public PoetryResult getCodeForForgetPassword(@RequestParam("place") String place, @RequestParam("flag") Integer flag) {
+    public UResult getCodeForForgetPassword(@RequestParam("place") String place, @RequestParam("flag") Integer flag) {
         return userService.getCodeForForgetPassword(place, flag);
     }
 
@@ -136,7 +136,7 @@ public class UserController {
      * 2 邮箱
      */
     @PostMapping("/updateForForgetPassword")
-    public PoetryResult updateForForgetPassword(@RequestParam("place") String place, @RequestParam("flag") Integer flag, @RequestParam("code") String code, @RequestParam("password") String password) {
+    public UResult updateForForgetPassword(@RequestParam("place") String place, @RequestParam("flag") Integer flag, @RequestParam("code") String code, @RequestParam("password") String password) {
         return userService.updateForForgetPassword(place, flag, code, password);
     }
 
@@ -145,7 +145,7 @@ public class UserController {
      */
     @GetMapping("/getUserByUsername")
     @LoginCheck
-    public PoetryResult<List<UserVO>> getUserByUsername(@RequestParam("username") String username) {
+    public UResult<List<UserVO>> getUserByUsername(@RequestParam("username") String username) {
         return userService.getUserByUsername(username);
     }
 
@@ -157,8 +157,8 @@ public class UserController {
      */
     @GetMapping("/subscribe")
     @LoginCheck
-    public PoetryResult<UserVO> subscribe(@RequestParam("labelId") Integer labelId, @RequestParam("flag") Boolean flag) {
-        PoetryCache.remove(CommonConst.USER_CACHE + PoetryUtil.getUserId().toString());
+    public UResult<UserVO> subscribe(@RequestParam("labelId") Integer labelId, @RequestParam("flag") Boolean flag) {
+        UCache.remove(CommonConst.USER_CACHE + PoetryUtil.getUserId().toString());
         return userService.subscribe(labelId, flag);
     }
 }

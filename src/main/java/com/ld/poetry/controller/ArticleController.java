@@ -3,7 +3,7 @@ package com.ld.poetry.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ld.poetry.config.LoginCheck;
-import com.ld.poetry.config.PoetryResult;
+import com.ld.poetry.config.UResult;
 import com.ld.poetry.service.ArticleService;
 import com.ld.poetry.utils.CommonConst;
 import com.ld.poetry.utils.PoetryCache;
@@ -34,7 +34,7 @@ public class ArticleController {
      */
 //    @LoginCheck(1)
     @PostMapping("/saveArticle")
-    public PoetryResult saveArticle(@Validated @RequestBody ArticleVO articleVO) {
+    public UResult saveArticle(@Validated @RequestBody ArticleVO articleVO) {
 //        PoetryCache.remove(CommonConst.USER_ARTICLE_LIST + PoetryUtil.getUserId().toString());
 //        PoetryCache.remove(CommonConst.ARTICLE_LIST);
 
@@ -47,7 +47,7 @@ public class ArticleController {
      */
     @GetMapping("/deleteArticle")
     @LoginCheck(1)
-    public PoetryResult deleteArticle(@RequestParam("id") Integer id) {
+    public UResult deleteArticle(@RequestParam("id") Integer id) {
         PoetryCache.remove(CommonConst.USER_ARTICLE_LIST + PoetryUtil.getUserId().toString());
         PoetryCache.remove(CommonConst.ARTICLE_LIST);
         return articleService.deleteArticle(id);
@@ -59,7 +59,7 @@ public class ArticleController {
      */
     @PostMapping("/updateArticle")
     @LoginCheck(1)
-    public PoetryResult updateArticle(@Validated @RequestBody ArticleVO articleVO) {
+    public UResult updateArticle(@Validated @RequestBody ArticleVO articleVO) {
         PoetryCache.remove(CommonConst.ARTICLE_LIST);
 
         return articleService.updateArticle(articleVO);
@@ -70,11 +70,11 @@ public class ArticleController {
      * 查询文章List
      */
     @PostMapping("/listArticle")
-    public PoetryResult<Page> listArticle(@RequestBody BaseRequestVO baseRequestVO) {
+    public UResult<Page> listArticle(@RequestBody BaseRequestVO baseRequestVO) {
         return articleService.listArticle(baseRequestVO);
     }
     @GetMapping("/listSortArticle")
-    public PoetryResult<Map<Integer, List<ArticleVO>>> listSortArticle() {
+    public UResult<Map<Integer, List<ArticleVO>>> listSortArticle() {
         return articleService.listSortArticle();
     }
 
@@ -82,7 +82,7 @@ public class ArticleController {
      * 查询文章
      */
     @GetMapping("/getArticleById")
-    public PoetryResult<ArticleVO> getArticleById(@RequestParam("id") Integer id, @RequestParam(value = "password", required = false) String password) {
+    public UResult<ArticleVO> getArticleById(@RequestParam("id") Integer id, @RequestParam(value = "password", required = false) String password) {
         return articleService.getArticleById(id, password);
     }
 }

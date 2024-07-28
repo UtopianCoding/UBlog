@@ -2,7 +2,7 @@ package com.ld.poetry.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.ld.poetry.config.PoetryResult;
+import com.ld.poetry.config.UResult;
 import com.ld.poetry.entity.User;
 import com.ld.poetry.vo.BaseRequestVO;
 import com.ld.poetry.vo.UserVO;
@@ -19,29 +19,29 @@ public interface UserService extends IService<User> {
      * @param password
      * @return
      */
-    PoetryResult<UserVO> login(String account, String password, Boolean isAdmin);
+    UResult<UserVO> login(String account, String password, Boolean isAdmin);
 
-    PoetryResult exit();
+    UResult exit();
 
-    PoetryResult<UserVO> regist(UserVO user);
+    UResult<UserVO> regist(UserVO user);
 
-    PoetryResult<UserVO> updateUserInfo(UserVO user);
+    UResult<UserVO> updateUserInfo(UserVO user);
 
-    PoetryResult getCode(Integer flag);
+    UResult getCode(Integer flag);
 
-    PoetryResult getCodeForBind(String place, Integer flag);
+    UResult getCodeForBind(String place, Integer flag);
 
-    PoetryResult<UserVO> updateSecretInfo(String place, Integer flag, String code, String password);
+    UResult<UserVO> updateSecretInfo(String place, Integer flag, String code, String password);
 
-    PoetryResult getCodeForForgetPassword(String place, Integer flag);
+    UResult getCodeForForgetPassword(String place, Integer flag);
 
-    PoetryResult updateForForgetPassword(String place, Integer flag, String code, String password);
+    UResult updateForForgetPassword(String place, Integer flag, String code, String password);
 
-    PoetryResult<Page> listUser(BaseRequestVO baseRequestVO);
+    UResult<Page> listUser(BaseRequestVO baseRequestVO);
 
-    PoetryResult<List<UserVO>> getUserByUsername(String username);
+    UResult<List<UserVO>> getUserByUsername(String username);
 
-    PoetryResult<UserVO> token(String userToken);
+    UResult<UserVO> token(String userToken);
 
-    PoetryResult<UserVO> subscribe(Integer labelId, Boolean flag);
+    UResult<UserVO> subscribe(Integer labelId, Boolean flag);
 }

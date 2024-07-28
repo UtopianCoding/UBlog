@@ -3,7 +3,7 @@ package com.ld.poetry.controller;
 
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.ld.poetry.config.LoginCheck;
-import com.ld.poetry.config.PoetryResult;
+import com.ld.poetry.config.UResult;
 import com.ld.poetry.config.SaveCheck;
 import com.ld.poetry.dao.ArticleMapper;
 import com.ld.poetry.entity.Article;
@@ -37,14 +37,14 @@ public class WeiYanController {
     @PostMapping("/saveWeiYan")
     @LoginCheck
     @SaveCheck
-    public PoetryResult saveWeiYan(@RequestBody WeiYan weiYanVO) {
+    public UResult saveWeiYan(@RequestBody WeiYan weiYanVO) {
         if (!StringUtils.hasText(weiYanVO.getContent())) {
-            return PoetryResult.fail("微言不能为空！");
+            return UResult.fail("微言不能为空！");
         }
 
         String content = StringUtil.removeHtml(weiYanVO.getContent());
         if (!StringUtils.hasText(content)) {
-            return PoetryResult.fail("微言内容不合法！");
+            return UResult.fail("微言内容不合法！");
         }
         weiYanVO.setContent(content);
 
@@ -56,7 +56,7 @@ public class WeiYanController {
         weiYan.setRealm("一年级");
         weiYan.setType(CommonConst.WEIYAN_TYPE_FRIEND);
         weiYanService.save(weiYan);
-        return PoetryResult.success();
+        return UResult.success();
     }
 
 
@@ -65,9 +65,9 @@ public class WeiYanController {
      */
     @PostMapping("/saveNews")
     @LoginCheck
-    public PoetryResult saveNews(@RequestBody WeiYan weiYanVO) {
+    public UResult saveNews(@RequestBody WeiYan weiYanVO) {
         if (!StringUtils.hasText(weiYanVO.getContent()) || weiYanVO.getSource() == null || weiYanVO.getCreateTime() == null) {
-            return PoetryResult.fail("信息不全！");
+            return UResult.fail("信息不全！");
         }
 
         Integer userId = PoetryUtil.getUserId();
@@ -76,7 +76,7 @@ public class WeiYanController {
         Integer count = wrapper.eq(Article::getId, weiYanVO.getSource()).eq(Article::getUserId, userId).count();
 
         if (count == null || count < 1) {
-            return PoetryResult.fail("来源不存在！");
+            return UResult.fail("来源不存在！");
         }
 
         WeiYan weiYan = new WeiYan();
@@ -89,16 +89,16 @@ public class WeiYanController {
         weiYan.setUserName(PoetryUtil.getUsername());
         weiYan.setRealm("一年级");
         weiYanService.save(weiYan);
-        return PoetryResult.success();
+        return UResult.success();
     }
 
     /**
      * 查询List
      */
     @PostMapping("/listNews")
-    public PoetryResult<BaseRequestVO> listNews(@RequestBody BaseRequestVO baseRequestVO) {
+    public UResult<BaseRequestVO> listNews(@RequestBody BaseRequestVO baseRequestVO) {
         if (baseRequestVO.getSource() == null) {
-            return PoetryResult.fail("来源不能为空！");
+            return UResult.fail("来源不能为空！");
         }
         LambdaQueryChainWrapper<WeiYan> lambdaQuery = weiYanService.lambdaQuery();
         lambdaQuery.eq(WeiYan::getType, CommonConst.WEIYAN_TYPE_NEWS);
@@ -106,7 +106,7 @@ public class WeiYanController {
         lambdaQuery.eq(WeiYan::getIsPublic, PoetryEnum.PUBLIC.getCode());
 
         lambdaQuery.orderByDesc(WeiYan::getCreateTime).page(baseRequestVO);
-        return PoetryResult.success(baseRequestVO);
+        return UResult.success(baseRequestVO);
     }
 
     /**
@@ -114,12 +114,12 @@ public class WeiYanController {
      */
     @GetMapping("/deleteWeiYan")
     @LoginCheck
-    public PoetryResult deleteWeiYan(@RequestParam("id") Integer id) {
+    public UResult deleteWeiYan(@RequestParam("id") Integer id) {
         Integer userId = PoetryUtil.getUserId();
         weiYanService.lambdaUpdate().eq(WeiYan::getId, id)
                 .eq(WeiYan::getUserId, userId)
                 .remove();
-        return PoetryResult.success();
+        return UResult.success();
     }
 
 
@@ -127,7 +127,7 @@ public class WeiYanController {
      * 查询List
      */
     @PostMapping("/listWeiYan")
-    public PoetryResult<BaseRequestVO> listWeiYan(@RequestBody BaseRequestVO baseRequestVO) {
+    public UResult<BaseRequestVO> listWeiYan(@RequestBody BaseRequestVO baseRequestVO) {
         LambdaQueryChainWrapper<WeiYan> lambdaQuery = weiYanService.lambdaQuery();
         lambdaQuery.eq(WeiYan::getType, CommonConst.WEIYAN_TYPE_FRIEND);
         System.out.println("..............."+baseRequestVO.getUserId());
@@ -147,6 +147,6 @@ public class WeiYanController {
         }
 
         lambdaQuery.orderByDesc(WeiYan::getCreateTime).page(baseRequestVO);
-        return PoetryResult.success(baseRequestVO);
+        return UResult.success(baseRequestVO);
     }
 }

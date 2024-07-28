@@ -3,7 +3,7 @@ package com.ld.poetry.service.impl;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.ld.poetry.config.PoetryResult;
+import com.ld.poetry.config.UResult;
 import com.ld.poetry.dao.ArticleMapper;
 import com.ld.poetry.dao.CommentMapper;
 import com.ld.poetry.entity.Article;
@@ -37,9 +37,9 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     private MailSendUtil mailSendUtil;
 
     @Override
-    public PoetryResult saveComment(CommentVO commentVO) {
+    public UResult saveComment(CommentVO commentVO) {
         if (CommentTypeEnum.getEnumByCode(commentVO.getType()) == null) {
-            return PoetryResult.fail("评论来源类型不存在！");
+            return UResult.fail("评论来源类型不存在！");
         }
         Article one = null;
         if (CommentTypeEnum.COMMENT_TYPE_ARTICLE.getCode().equals(commentVO.getType())) {
@@ -47,10 +47,10 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
             one = articleWrapper.eq(Article::getId, commentVO.getSource()).select(Article::getUserId, Article::getArticleTitle, Article::getCommentStatus).one();
 
             if (one == null) {
-                return PoetryResult.fail("文章不存在");
+                return UResult.fail("文章不存在");
             } else {
                 if (!one.getCommentStatus()) {
-                    return PoetryResult.fail("评论功能已关闭！");
+                    return UResult.fail("评论功能已关闭！");
                 }
             }
         }
@@ -75,22 +75,22 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
             log.error("发送评论邮件失败：", e);
         }
 
-        return PoetryResult.success();
+        return UResult.success();
     }
 
     @Override
-    public PoetryResult deleteComment(Integer id) {
+    public UResult deleteComment(Integer id) {
         Integer userId = PoetryUtil.getUserId();
         lambdaUpdate().eq(Comment::getId, id)
                 .eq(Comment::getUserId, userId)
                 .remove();
-        return PoetryResult.success();
+        return UResult.success();
     }
 
     @Override
-    public PoetryResult<BaseRequestVO> listComment(BaseRequestVO baseRequestVO) {
+    public UResult<BaseRequestVO> listComment(BaseRequestVO baseRequestVO) {
         if (baseRequestVO.getSource() == null || !StringUtils.hasText(baseRequestVO.getCommentType())) {
-            return PoetryResult.fail(CodeMsg.PARAMETER_ERROR);
+            return UResult.fail(CodeMsg.PARAMETER_ERROR);
         }
 
         if (CommentTypeEnum.COMMENT_TYPE_ARTICLE.getCode().equals(baseRequestVO.getCommentType())) {
@@ -98,7 +98,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
             Article one = articleWrapper.eq(Article::getId, baseRequestVO.getSource()).select(Article::getCommentStatus).one();
 
             if (one != null && !one.getCommentStatus()) {
-                return PoetryResult.fail("评论功能已关闭！");
+                return UResult.fail("评论功能已关闭！");
             }
         }
 
@@ -107,7 +107,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
             lambdaQuery().eq(Comment::getSource, baseRequestVO.getSource()).eq(Comment::getType, baseRequestVO.getCommentType()).eq(Comment::getParentCommentId, CommonConst.FIRST_COMMENT).orderByAsc(Comment::getCreateTime).page(baseRequestVO);
             List<Comment> comments = baseRequestVO.getRecords();
             if (CollectionUtils.isEmpty(comments)) {
-                return PoetryResult.success(baseRequestVO);
+                return UResult.success(baseRequestVO);
             }
             List<CommentVO> commentVOs = comments.stream().map(c -> {
                 CommentVO commentVO = buildCommentVO(c);
@@ -126,16 +126,16 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
             lambdaQuery().eq(Comment::getSource, baseRequestVO.getSource()).eq(Comment::getType, baseRequestVO.getCommentType()).eq(Comment::getFloorCommentId, baseRequestVO.getFloorCommentId()).orderByAsc(Comment::getCreateTime).page(baseRequestVO);
             List<Comment> childComments = baseRequestVO.getRecords();
             if (CollectionUtils.isEmpty(childComments)) {
-                return PoetryResult.success(baseRequestVO);
+                return UResult.success(baseRequestVO);
             }
             List<CommentVO> ccVO = childComments.stream().map(cc -> buildCommentVO(cc)).collect(Collectors.toList());
             baseRequestVO.setRecords(ccVO);
         }
-        return PoetryResult.success(baseRequestVO);
+        return UResult.success(baseRequestVO);
     }
 
     @Override
-    public PoetryResult<Page> listAdminComment(BaseRequestVO baseRequestVO, Boolean isBoss) {
+    public UResult<Page> listAdminComment(BaseRequestVO baseRequestVO, Boolean isBoss) {
         LambdaQueryChainWrapper<Comment> wrapper = lambdaQuery();
         if (isBoss) {
             if (baseRequestVO.getSource() != null) {
@@ -159,7 +159,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
                 wrapper.orderByDesc(Comment::getCreateTime).page(baseRequestVO);
             }
         }
-        return PoetryResult.success(baseRequestVO);
+        return UResult.success(baseRequestVO);
     }
 
     private CommentVO buildCommentVO(Comment c) {

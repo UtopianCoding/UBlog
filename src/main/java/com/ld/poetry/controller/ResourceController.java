@@ -3,7 +3,7 @@ package com.ld.poetry.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ld.poetry.config.LoginCheck;
-import com.ld.poetry.config.PoetryResult;
+import com.ld.poetry.config.UResult;
 import com.ld.poetry.entity.Resource;
 import com.ld.poetry.service.ResourceService;
 import com.ld.poetry.utils.storage.StoreService;
@@ -38,9 +38,9 @@ public class ResourceController {
      */
     @PostMapping("/saveResource")
     @LoginCheck
-    public PoetryResult saveResource(@RequestBody Resource resource) {
+    public UResult saveResource(@RequestBody Resource resource) {
         if (!StringUtils.hasText(resource.getType()) || !StringUtils.hasText(resource.getPath())) {
-            return PoetryResult.fail("资源类型和资源路径不能为空！");
+            return UResult.fail("资源类型和资源路径不能为空！");
         }
         Resource re = new Resource();
         re.setPath(resource.getPath());
@@ -50,7 +50,7 @@ public class ResourceController {
         re.setStoreType(resource.getStoreType());
         re.setUserId(PoetryUtil.getUserId());
         resourceService.save(re);
-        return PoetryResult.success();
+        return UResult.success();
     }
 
     /**
@@ -58,9 +58,9 @@ public class ResourceController {
      */
     @PostMapping("/upload")
     @LoginCheck
-    public PoetryResult<String> upload(@RequestParam("file") MultipartFile file, FileVO fileVO) {
+    public UResult<String> upload(@RequestParam("file") MultipartFile file, FileVO fileVO) {
         if (file == null || !StringUtils.hasText(fileVO.getType()) || !StringUtils.hasText(fileVO.getRelativePath())) {
-            return PoetryResult.fail("文件和资源类型和资源路径不能为空！");
+            return UResult.fail("文件和资源类型和资源路径不能为空！");
         }
 
         fileVO.setFile(file);
@@ -75,7 +75,7 @@ public class ResourceController {
         re.setStoreType(fileVO.getStoreType());
         re.setUserId(PoetryUtil.getUserId());
         resourceService.save(re);
-        return PoetryResult.success(result.getVisitPath());
+        return UResult.success(result.getVisitPath());
     }
 
     /**
@@ -83,15 +83,15 @@ public class ResourceController {
      */
     @PostMapping("/deleteResource")
     @LoginCheck(0)
-    public PoetryResult deleteResource(@RequestParam("path") String path) {
+    public UResult deleteResource(@RequestParam("path") String path) {
         Resource resource = resourceService.lambdaQuery().select(Resource::getStoreType).eq(Resource::getPath, path).one();
         if (resource == null) {
-            return PoetryResult.fail("文件不存在：" + path);
+            return UResult.fail("文件不存在：" + path);
         }
 
         StoreService storeService = fileStorageService.getFileStorageByStoreType(resource.getStoreType());
         storeService.deleteFile(Collections.singletonList(path));
-        return PoetryResult.success();
+        return UResult.success();
     }
 
     /**
@@ -99,7 +99,7 @@ public class ResourceController {
      */
     @GetMapping("/getImageList")
     @LoginCheck
-    public PoetryResult<List<String>> getImageList() {
+    public UResult<List<String>> getImageList() {
         List<Resource> list = resourceService.lambdaQuery().select(Resource::getPath)
                 .eq(Resource::getType, CommonConst.PATH_TYPE_INTERNET_MEME)
                 .eq(Resource::getStatus, PoetryEnum.STATUS_ENABLE.getCode())
@@ -107,7 +107,7 @@ public class ResourceController {
                 .orderByDesc(Resource::getCreateTime)
                 .list();
         List<String> paths = list.stream().map(Resource::getPath).collect(Collectors.toList());
-        return PoetryResult.success(paths);
+        return UResult.success(paths);
     }
 
     /**
@@ -115,11 +115,11 @@ public class ResourceController {
      */
     @PostMapping("/listResource")
     @LoginCheck(0)
-    public PoetryResult<Page> listResource(@RequestBody BaseRequestVO baseRequestVO) {
+    public UResult<Page> listResource(@RequestBody BaseRequestVO baseRequestVO) {
         resourceService.lambdaQuery()
                 .eq(StringUtils.hasText(baseRequestVO.getResourceType()), Resource::getType, baseRequestVO.getResourceType())
                 .orderByDesc(Resource::getCreateTime).page(baseRequestVO);
-        return PoetryResult.success(baseRequestVO);
+        return UResult.success(baseRequestVO);
     }
 
     /**
@@ -127,9 +127,9 @@ public class ResourceController {
      */
     @GetMapping("/changeResourceStatus")
     @LoginCheck(0)
-    public PoetryResult changeResourceStatus(@RequestParam("id") Integer id, @RequestParam("flag") Boolean flag) {
+    public UResult changeResourceStatus(@RequestParam("id") Integer id, @RequestParam("flag") Boolean flag) {
         resourceService.lambdaUpdate().eq(Resource::getId, id).set(Resource::getStatus, flag).update();
-        return PoetryResult.success();
+        return UResult.success();
     }
 }
 

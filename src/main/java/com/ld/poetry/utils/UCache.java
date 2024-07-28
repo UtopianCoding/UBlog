@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.concurrent.*;
 
 
-public class PoetryCache {
+public class UCache {
 
     //键值对集合
     private final static Map<String, Entity> map = new ConcurrentHashMap<>();

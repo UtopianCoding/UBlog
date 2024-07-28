@@ -48,6 +48,9 @@ public class Sort implements Serializable {
     @TableField("priority")
     private Integer priority;
 
+    @TableField("mode")
+    private String mode;
+
     @TableField(exist = false)
     private Integer countOfSort;
 

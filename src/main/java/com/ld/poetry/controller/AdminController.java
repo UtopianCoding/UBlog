@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapp
 import com.baomidou.mybatisplus.extension.conditions.update.LambdaUpdateChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ld.poetry.config.LoginCheck;
-import com.ld.poetry.config.PoetryResult;
+import com.ld.poetry.config.UResult;
 import com.ld.poetry.dao.TreeHoleMapper;
 import com.ld.poetry.dao.WebInfoMapper;
 import com.ld.poetry.entity.*;
@@ -49,7 +49,7 @@ public class AdminController {
      */
     @PostMapping("/user/list")
     @LoginCheck(0)
-    public PoetryResult<Page> listUser(@RequestBody BaseRequestVO baseRequestVO) {
+    public UResult<Page> listUser(@RequestBody BaseRequestVO baseRequestVO) {
         return userService.listUser(baseRequestVO);
     }
 
@@ -61,7 +61,7 @@ public class AdminController {
      */
     @GetMapping("/user/changeUserStatus")
     @LoginCheck(0)
-    public PoetryResult changeUserStatus(@RequestParam("userId") Integer userId, @RequestParam("flag") Boolean flag) {
+    public UResult changeUserStatus(@RequestParam("userId") Integer userId, @RequestParam("flag") Boolean flag) {
         LambdaUpdateChainWrapper<User> updateChainWrapper = userService.lambdaUpdate().eq(User::getId, userId);
         if (flag) {
             updateChainWrapper.eq(User::getUserStatus, PoetryEnum.STATUS_DISABLE.getCode()).set(User::getUserStatus, PoetryEnum.STATUS_ENABLE.getCode()).update();
@@ -69,7 +69,7 @@ public class AdminController {
             updateChainWrapper.eq(User::getUserStatus, PoetryEnum.STATUS_ENABLE.getCode()).set(User::getUserStatus, PoetryEnum.STATUS_DISABLE.getCode()).update();
         }
         logout(userId);
-        return PoetryResult.success();
+        return UResult.success();
     }
 
     /**
@@ -77,13 +77,13 @@ public class AdminController {
      */
     @GetMapping("/user/changeUserAdmire")
     @LoginCheck(0)
-    public PoetryResult changeUserAdmire(@RequestParam("userId") Integer userId, @RequestParam("admire") String admire) {
+    public UResult changeUserAdmire(@RequestParam("userId") Integer userId, @RequestParam("admire") String admire) {
         userService.lambdaUpdate()
                 .eq(User::getId, userId)
                 .set(User::getAdmire, admire)
                 .update();
         PoetryCache.remove(CommonConst.ADMIRE);
-        return PoetryResult.success();
+        return UResult.success();
     }
 
     /**
@@ -91,14 +91,14 @@ public class AdminController {
      */
     @GetMapping("/user/changeUserType")
     @LoginCheck(0)
-    public PoetryResult changeUserType(@RequestParam("userId") Integer userId, @RequestParam("userType") Integer userType) {
+    public UResult changeUserType(@RequestParam("userId") Integer userId, @RequestParam("userType") Integer userType) {
         if (userType != 0 && userType != 1 && userType != 2) {
-            return PoetryResult.fail(CodeMsg.PARAMETER_ERROR);
+            return UResult.fail(CodeMsg.PARAMETER_ERROR);
         }
         userService.lambdaUpdate().eq(User::getId, userId).set(User::getUserType, userType).update();
 
         logout(userId);
-        return PoetryResult.success();
+        return UResult.success();
     }
 
     private void logout(Integer userId) {
@@ -121,13 +121,13 @@ public class AdminController {
      */
     @GetMapping("/webInfo/getAdminWebInfo")
     @LoginCheck(0)
-    public PoetryResult<WebInfo> getWebInfo() {
+    public UResult<WebInfo> getWebInfo() {
         LambdaQueryChainWrapper<WebInfo> wrapper = new LambdaQueryChainWrapper<>(webInfoMapper);
         List<WebInfo> list = wrapper.list();
         if (!CollectionUtils.isEmpty(list)) {
-            return PoetryResult.success(list.get(0));
+            return UResult.success(list.get(0));
         } else {
-            return PoetryResult.success();
+            return UResult.success();
         }
     }
 
@@ -137,7 +137,7 @@ public class AdminController {
      */
     @PostMapping("/article/user/list")
     @LoginCheck(1)
-    public PoetryResult<Page> listUserArticle(@RequestBody BaseRequestVO baseRequestVO) {
+    public UResult<Page> listUserArticle(@RequestBody BaseRequestVO baseRequestVO) {
         return articleService.listAdminArticle(baseRequestVO, false);
     }
 
@@ -147,7 +147,7 @@ public class AdminController {
      */
     @PostMapping("/article/boss/list")
     @LoginCheck(0)
-    public PoetryResult<Page> listBossArticle(@RequestBody BaseRequestVO baseRequestVO) {
+    public UResult<Page> listBossArticle(@RequestBody BaseRequestVO baseRequestVO) {
         return articleService.listAdminArticle(baseRequestVO, true);
     }
 
@@ -156,7 +156,7 @@ public class AdminController {
      */
     @GetMapping("/article/changeArticleStatus")
     @LoginCheck(1)
-    public PoetryResult changeArticleStatus(@RequestParam("articleId") Integer articleId,
+    public UResult changeArticleStatus(@RequestParam("articleId") Integer articleId,
                                             @RequestParam(value = "viewStatus", required = false) Boolean viewStatus,
                                             @RequestParam(value = "commentStatus", required = false) Boolean commentStatus,
                                             @RequestParam(value = "recommendStatus", required = false) Boolean recommendStatus) {
@@ -173,7 +173,7 @@ public class AdminController {
             updateChainWrapper.set(Article::getRecommendStatus, recommendStatus);
         }
         updateChainWrapper.update();
-        return PoetryResult.success();
+        return UResult.success();
     }
 
     /**
@@ -181,7 +181,7 @@ public class AdminController {
      */
     @GetMapping("/article/getArticleById")
     @LoginCheck(1)
-    public PoetryResult<ArticleVO> getArticleByIdForUser(@RequestParam("id") Integer id) {
+    public UResult<ArticleVO> getArticleByIdForUser(@RequestParam("id") Integer id) {
         return articleService.getArticleByIdForUser(id);
     }
 
@@ -190,20 +190,20 @@ public class AdminController {
      */
     @GetMapping("/comment/user/deleteComment")
     @LoginCheck(1)
-    public PoetryResult userDeleteComment(@RequestParam("id") Integer id) {
+    public UResult userDeleteComment(@RequestParam("id") Integer id) {
         Comment comment = commentService.lambdaQuery().select(Comment::getSource, Comment::getType).eq(Comment::getId, id).one();
         if (comment == null) {
-            return PoetryResult.success();
+            return UResult.success();
         }
         if (!CommentTypeEnum.COMMENT_TYPE_ARTICLE.getCode().equals(comment.getType())) {
-            return PoetryResult.fail("权限不足！");
+            return UResult.fail("权限不足！");
         }
         Article one = articleService.lambdaQuery().eq(Article::getId, comment.getSource()).select(Article::getUserId).one();
         if (one == null || (PoetryUtil.getUserId().intValue() != one.getUserId().intValue())) {
-            return PoetryResult.fail("权限不足！");
+            return UResult.fail("权限不足！");
         }
         commentService.removeById(id);
-        return PoetryResult.success();
+        return UResult.success();
     }
 
     /**
@@ -211,9 +211,9 @@ public class AdminController {
      */
     @GetMapping("/comment/boss/deleteComment")
     @LoginCheck(0)
-    public PoetryResult bossDeleteComment(@RequestParam("id") Integer id) {
+    public UResult bossDeleteComment(@RequestParam("id") Integer id) {
         commentService.removeById(id);
-        return PoetryResult.success();
+        return UResult.success();
     }
 
     /**
@@ -221,7 +221,7 @@ public class AdminController {
      */
     @PostMapping("/comment/user/list")
     @LoginCheck(1)
-    public PoetryResult<Page> listUserComment(@RequestBody BaseRequestVO baseRequestVO) {
+    public UResult<Page> listUserComment(@RequestBody BaseRequestVO baseRequestVO) {
         return commentService.listAdminComment(baseRequestVO, false);
     }
 
@@ -230,7 +230,7 @@ public class AdminController {
      */
     @PostMapping("/comment/boss/list")
     @LoginCheck(0)
-    public PoetryResult<Page> listBossComment(@RequestBody BaseRequestVO baseRequestVO) {
+    public UResult<Page> listBossComment(@RequestBody BaseRequestVO baseRequestVO) {
         return commentService.listAdminComment(baseRequestVO, true);
     }
 
@@ -239,9 +239,9 @@ public class AdminController {
      */
     @PostMapping("/treeHole/boss/list")
     @LoginCheck(0)
-    public PoetryResult<Page> listBossTreeHole(@RequestBody BaseRequestVO baseRequestVO) {
+    public UResult<Page> listBossTreeHole(@RequestBody BaseRequestVO baseRequestVO) {
         LambdaQueryChainWrapper<TreeHole> wrapper = new LambdaQueryChainWrapper<>(treeHoleMapper);
         wrapper.orderByDesc(TreeHole::getCreateTime).page(baseRequestVO);
-        return PoetryResult.success(baseRequestVO);
+        return UResult.success(baseRequestVO);
     }
 }
