@@ -23,7 +23,7 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping("/api/server")
+@RequestMapping("/api/monitor")
 public class ServerController {
 
     @Autowired

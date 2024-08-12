@@ -2,7 +2,7 @@ package com.ld.poetry.utils.storage;
 
 import com.ld.poetry.entity.User;
 import com.ld.poetry.utils.CommonConst;
-import com.ld.poetry.utils.PoetryCache;
+import com.ld.poetry.utils.UCache;
 import com.ld.poetry.utils.PoetryUtil;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
@@ -21,25 +21,25 @@ public class FileFilter {
         if (matcher.match("/resource/upload", httpServletRequest.getRequestURI())) {
             String token = PoetryUtil.getToken();
             if (StringUtils.hasText(token)) {
-                User user = (User) PoetryCache.get(token);
+                User user = (User) UCache.get(token);
 
                 if (user != null) {
                     if (user.getId().intValue() == PoetryUtil.getAdminUser().getId().intValue()) {
                         return false;
                     }
 
-                    AtomicInteger atomicInteger = (AtomicInteger) PoetryCache.get(CommonConst.SAVE_COUNT_USER_ID + user.getId().toString());
+                    AtomicInteger atomicInteger = (AtomicInteger) UCache.get(CommonConst.SAVE_COUNT_USER_ID + user.getId().toString());
                     if (atomicInteger == null) {
                         atomicInteger = new AtomicInteger();
-                        PoetryCache.put(CommonConst.SAVE_COUNT_USER_ID + user.getId().toString(), atomicInteger, CommonConst.SAVE_EXPIRE);
+                        UCache.put(CommonConst.SAVE_COUNT_USER_ID + user.getId().toString(), atomicInteger, CommonConst.SAVE_EXPIRE);
                     }
                     int userIdCount = atomicInteger.getAndIncrement();
 
                     String ip = PoetryUtil.getIpAddr(PoetryUtil.getRequest());
-                    AtomicInteger atomic = (AtomicInteger) PoetryCache.get(CommonConst.SAVE_COUNT_IP + ip);
+                    AtomicInteger atomic = (AtomicInteger) UCache.get(CommonConst.SAVE_COUNT_IP + ip);
                     if (atomic == null) {
                         atomic = new AtomicInteger();
-                        PoetryCache.put(CommonConst.SAVE_COUNT_IP + ip, atomic, CommonConst.SAVE_EXPIRE);
+                        UCache.put(CommonConst.SAVE_COUNT_IP + ip, atomic, CommonConst.SAVE_EXPIRE);
                     }
                     int ipCount = atomic.getAndIncrement();
 

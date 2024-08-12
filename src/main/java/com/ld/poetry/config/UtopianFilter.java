@@ -35,7 +35,7 @@ public class UtopianFilter extends OncePerRequestFilter {
             if (fileFilter.doFilterFile(httpServletRequest, httpServletResponse)) {
                 httpServletResponse.setHeader("Access-Control-Allow-Origin", "*");
                 httpServletResponse.setContentType("application/json;charset=UTF-8");
-                httpServletResponse.getWriter().write(JSON.toJSONString(PoetryResult.fail(CodeMsg.PARAMETER_ERROR.getCode(), CodeMsg.PARAMETER_ERROR.getMsg())));
+                httpServletResponse.getWriter().write(JSON.toJSONString(UResult.fail(CodeMsg.PARAMETER_ERROR.getCode(), CodeMsg.PARAMETER_ERROR.getMsg())));
                 return;
             }
         }

@@ -1,7 +1,7 @@
 package com.ld.poetry.handle;
 
 import com.alibaba.fastjson.JSON;
-import com.ld.poetry.config.PoetryResult;
+import com.ld.poetry.config.UResult;
 import com.ld.poetry.utils.CodeMsg;
 import com.ld.poetry.utils.PoetryUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -21,29 +21,29 @@ public class PoetryExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     @ResponseBody
-    public PoetryResult handlerException(Exception ex) {
+    public UResult handlerException(Exception ex) {
         log.error("请求URL-----------------" + PoetryUtil.getRequest().getRequestURL());
         log.error("出错啦------------------", ex);
         if (ex instanceof PoetryRuntimeException) {
             PoetryRuntimeException e = (PoetryRuntimeException) ex;
-            return PoetryResult.fail(e.getMessage());
+            return UResult.fail(e.getMessage());
         }
 
         if (ex instanceof PoetryLoginException) {
             PoetryLoginException e = (PoetryLoginException) ex;
-            return PoetryResult.fail(300, e.getMessage());
+            return UResult.fail(300, e.getMessage());
         }
 
         if (ex instanceof MethodArgumentNotValidException) {
             MethodArgumentNotValidException e = (MethodArgumentNotValidException) ex;
             Map<String, String> collect = e.getFieldErrors().stream().collect(Collectors.toMap(FieldError::getField, FieldError::getDefaultMessage));
-            return PoetryResult.fail(JSON.toJSONString(collect));
+            return UResult.fail(JSON.toJSONString(collect));
         }
 
         if (ex instanceof MissingServletRequestParameterException) {
-            return PoetryResult.fail(CodeMsg.PARAMETER_ERROR);
+            return UResult.fail(CodeMsg.PARAMETER_ERROR);
         }
 
-        return PoetryResult.fail(CodeMsg.FAIL);
+        return UResult.fail(CodeMsg.FAIL);
     }
 }

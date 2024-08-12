@@ -75,7 +75,7 @@ public class WebInfoController {
         List<WebInfo> list = wrapper.list();
         if (!CollectionUtils.isEmpty(list)) {
             list.get(0).setDefaultStoreType(defaultType);
-            PoetryCache.put(CommonConst.WEB_INFO, list.get(0));
+            UCache.put(CommonConst.WEB_INFO, list.get(0));
         }
         return UResult.success();
     }
@@ -86,7 +86,7 @@ public class WebInfoController {
      */
     @GetMapping("/getWebInfo")
     public UResult<WebInfo> getWebInfo() {
-        WebInfo webInfo = (WebInfo) PoetryCache.get(CommonConst.WEB_INFO);
+        WebInfo webInfo = (WebInfo) UCache.get(CommonConst.WEB_INFO);
         if (webInfo != null) {
             WebInfo result = new WebInfo();
             BeanUtils.copyProperties(webInfo, result);
@@ -95,8 +95,8 @@ public class WebInfoController {
             result.setRandomName(null);
             result.setWaifuJson(null);
 
-            webInfo.setHistoryAllCount(((Long) ((Map<String, Object>) PoetryCache.get(CommonConst.IP_HISTORY_STATISTICS)).get(CommonConst.IP_HISTORY_COUNT)).toString());
-            webInfo.setHistoryDayCount(Integer.toString(((List<Map<String, Object>>) ((Map<String, Object>) PoetryCache.get(CommonConst.IP_HISTORY_STATISTICS)).get(CommonConst.IP_HISTORY_HOUR)).size()));
+            webInfo.setHistoryAllCount(((Long) ((Map<String, Object>) UCache.get(CommonConst.IP_HISTORY_STATISTICS)).get(CommonConst.IP_HISTORY_COUNT)).toString());
+            webInfo.setHistoryDayCount(Integer.toString(((List<Map<String, Object>>) ((Map<String, Object>) UCache.get(CommonConst.IP_HISTORY_STATISTICS)).get(CommonConst.IP_HISTORY_HOUR)).size()));
             return UResult.success(result);
         }
         return UResult.success();
@@ -110,7 +110,7 @@ public class WebInfoController {
     public UResult<Map<String, Object>> getHistoryInfo() {
         Map<String, Object> result = new HashMap<>();
 
-        Map<String, Object> history = (Map<String, Object>) PoetryCache.get(CommonConst.IP_HISTORY_STATISTICS);
+        Map<String, Object> history = (Map<String, Object>) UCache.get(CommonConst.IP_HISTORY_STATISTICS);
         List<HistoryInfo> infoList = new LambdaQueryChainWrapper<>(historyInfoMapper)
                 .select(HistoryInfo::getIp, HistoryInfo::getUserId, HistoryInfo::getNation, HistoryInfo::getProvince, HistoryInfo::getCity)
                 .ge(HistoryInfo::getCreateTime, LocalDateTime.now().with(LocalTime.MIN))
@@ -180,7 +180,7 @@ public class WebInfoController {
      */
     @GetMapping("/getSortInfo")
     public UResult<List<Sort>> getSortInfo() {
-        List<Sort> sortInfo = (List<Sort>) PoetryCache.get(CommonConst.SORT_INFO);
+        List<Sort> sortInfo = (List<Sort>) UCache.get(CommonConst.SORT_INFO);
         if (sortInfo != null) {
             return UResult.success(sortInfo);
         }
@@ -192,7 +192,7 @@ public class WebInfoController {
      */
     @GetMapping("/getWaifuJson")
     public String getWaifuJson() {
-        WebInfo webInfo = (WebInfo) PoetryCache.get(CommonConst.WEB_INFO);
+        WebInfo webInfo = (WebInfo) UCache.get(CommonConst.WEB_INFO);
         if (webInfo != null && StringUtils.hasText(webInfo.getWaifuJson())) {
             return webInfo.getWaifuJson();
         }
@@ -544,7 +544,7 @@ public class WebInfoController {
         sortMapper.insert(sort);
         List<Sort> sortInfo = commonQuery.getSortInfo();
         if (!CollectionUtils.isEmpty(sortInfo)) {
-            PoetryCache.put(CommonConst.SORT_INFO, sortInfo);
+            UCache.put(CommonConst.SORT_INFO, sortInfo);
         }
         return UResult.success();
     }
@@ -559,7 +559,7 @@ public class WebInfoController {
         sortMapper.deleteById(id);
         List<Sort> sortInfo = commonQuery.getSortInfo();
         if (!CollectionUtils.isEmpty(sortInfo)) {
-            PoetryCache.put(CommonConst.SORT_INFO, sortInfo);
+            UCache.put(CommonConst.SORT_INFO, sortInfo);
         }
         return UResult.success();
     }
@@ -574,7 +574,7 @@ public class WebInfoController {
         sortMapper.updateById(sort);
         List<Sort> sortInfo = commonQuery.getSortInfo();
         if (!CollectionUtils.isEmpty(sortInfo)) {
-            PoetryCache.put(CommonConst.SORT_INFO, sortInfo);
+            UCache.put(CommonConst.SORT_INFO, sortInfo);
         }
         return UResult.success();
     }
@@ -601,7 +601,7 @@ public class WebInfoController {
         labelMapper.insert(label);
         List<Sort> sortInfo = commonQuery.getSortInfo();
         if (!CollectionUtils.isEmpty(sortInfo)) {
-            PoetryCache.put(CommonConst.SORT_INFO, sortInfo);
+            UCache.put(CommonConst.SORT_INFO, sortInfo);
         }
         return UResult.success();
     }
@@ -616,7 +616,7 @@ public class WebInfoController {
         labelMapper.deleteById(id);
         List<Sort> sortInfo = commonQuery.getSortInfo();
         if (!CollectionUtils.isEmpty(sortInfo)) {
-            PoetryCache.put(CommonConst.SORT_INFO, sortInfo);
+            UCache.put(CommonConst.SORT_INFO, sortInfo);
         }
         return UResult.success();
     }
@@ -631,7 +631,7 @@ public class WebInfoController {
         labelMapper.updateById(label);
         List<Sort> sortInfo = commonQuery.getSortInfo();
         if (!CollectionUtils.isEmpty(sortInfo)) {
-            PoetryCache.put(CommonConst.SORT_INFO, sortInfo);
+            UCache.put(CommonConst.SORT_INFO, sortInfo);
         }
         return UResult.success();
     }

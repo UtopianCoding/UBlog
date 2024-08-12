@@ -107,7 +107,7 @@ public class CommonQuery {
         Integer userId = PoetryUtil.getUserId();
         String ipUser = ip + (userId != null ? "_" + userId.toString() : "");
 
-        CopyOnWriteArraySet<String> ipHistory = (CopyOnWriteArraySet<String>) PoetryCache.get(CommonConst.IP_HISTORY);
+        CopyOnWriteArraySet<String> ipHistory = (CopyOnWriteArraySet<String>) UCache.get(CommonConst.IP_HISTORY);
         if (!ipHistory.contains(ipUser)) {
             synchronized (ipUser.intern()) {
                 if (!ipHistory.contains(ipUser)) {
@@ -140,32 +140,32 @@ public class CommonQuery {
     }
 
     public User getUser(Integer userId) {
-        User user = (User) PoetryCache.get(CommonConst.USER_CACHE + userId.toString());
+        User user = (User) UCache.get(CommonConst.USER_CACHE + userId.toString());
         if (user != null) {
             return user;
         }
         User u = userService.getById(userId);
         if (u != null) {
-            PoetryCache.put(CommonConst.USER_CACHE + userId.toString(), u, CommonConst.EXPIRE);
+            UCache.put(CommonConst.USER_CACHE + userId.toString(), u, CommonConst.EXPIRE);
             return u;
         }
         return null;
     }
 
     public List<User> getAdmire() {
-        List<User> admire = (List<User>) PoetryCache.get(CommonConst.ADMIRE);
+        List<User> admire = (List<User>) UCache.get(CommonConst.ADMIRE);
         if (admire != null) {
             return admire;
         }
         List<User> users = userService.lambdaQuery().select(User::getUsername, User::getAdmire, User::getAvatar).isNotNull(User::getAdmire).list();
 
-        PoetryCache.put(CommonConst.ADMIRE, users, CommonConst.EXPIRE);
+        UCache.put(CommonConst.ADMIRE, users, CommonConst.EXPIRE);
 
         return users;
     }
 
     public List<FamilyVO> getFamilyList() {
-        List<FamilyVO> familyVOList = (List<FamilyVO>) PoetryCache.get(CommonConst.FAMILY_LIST);
+        List<FamilyVO> familyVOList = (List<FamilyVO>) UCache.get(CommonConst.FAMILY_LIST);
         if (familyVOList != null) {
             return familyVOList;
         }
@@ -182,41 +182,41 @@ public class CommonQuery {
             familyVOList = new ArrayList<>();
         }
 
-        PoetryCache.put(CommonConst.FAMILY_LIST, familyVOList);
+        UCache.put(CommonConst.FAMILY_LIST, familyVOList);
         return familyVOList;
     }
 
     public Integer getCommentCount(Integer source, String type) {
-        Integer count = (Integer) PoetryCache.get(CommonConst.COMMENT_COUNT_CACHE + source.toString() + "_" + type);
+        Integer count = (Integer) UCache.get(CommonConst.COMMENT_COUNT_CACHE + source.toString() + "_" + type);
         if (count != null) {
             return count;
         }
         LambdaQueryChainWrapper<Comment> wrapper = new LambdaQueryChainWrapper<>(commentMapper);
         Integer c = wrapper.eq(Comment::getSource, source).eq(Comment::getType, type).count();
-        PoetryCache.put(CommonConst.COMMENT_COUNT_CACHE + source.toString() + "_" + type, c, CommonConst.EXPIRE);
+        UCache.put(CommonConst.COMMENT_COUNT_CACHE + source.toString() + "_" + type, c, CommonConst.EXPIRE);
         return c;
     }
 
     public List<Integer> getUserArticleIds(Integer userId) {
-        List<Integer> ids = (List<Integer>) PoetryCache.get(CommonConst.USER_ARTICLE_LIST + userId.toString());
+        List<Integer> ids = (List<Integer>) UCache.get(CommonConst.USER_ARTICLE_LIST + userId.toString());
         if (ids != null) {
             return ids;
         }
         LambdaQueryChainWrapper<Article> wrapper = new LambdaQueryChainWrapper<>(articleMapper);
         List<Article> articles = wrapper.eq(Article::getUserId, userId).select(Article::getId).list();
         List<Integer> collect = articles.stream().map(Article::getId).collect(Collectors.toList());
-        PoetryCache.put(CommonConst.USER_ARTICLE_LIST + userId.toString(), collect, CommonConst.EXPIRE);
+        UCache.put(CommonConst.USER_ARTICLE_LIST + userId.toString(), collect, CommonConst.EXPIRE);
         return collect;
     }
 
     public List<List<Integer>> getArticleIds(String searchText) {
-        List<Article> articles = (List<Article>) PoetryCache.get(CommonConst.ARTICLE_LIST);
+        List<Article> articles = (List<Article>) UCache.get(CommonConst.ARTICLE_LIST);
         if (articles == null) {
             LambdaQueryChainWrapper<Article> wrapper = new LambdaQueryChainWrapper<>(articleMapper);
             articles = wrapper.select(Article::getId, Article::getArticleTitle, Article::getArticleContent)
                     .orderByDesc(Article::getCreateTime)
                     .list();
-            PoetryCache.put(CommonConst.ARTICLE_LIST, articles);
+            UCache.put(CommonConst.ARTICLE_LIST, articles);
         }
 
         List<List<Integer>> ids = new ArrayList<>();

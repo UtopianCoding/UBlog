@@ -130,4 +130,7 @@ public class Article implements Serializable {
     @TableField(value = "abstractArticle")
     private String abstractArticle;
 
+    @TableField("video_url")
+    private String videoUrl;
+
 }

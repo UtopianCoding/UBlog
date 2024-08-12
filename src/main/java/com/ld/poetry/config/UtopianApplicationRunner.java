@@ -9,7 +9,7 @@ import com.ld.poetry.service.FamilyService;
 import com.ld.poetry.service.UserService;
 import com.ld.poetry.utils.CommonConst;
 import com.ld.poetry.utils.CommonQuery;
-import com.ld.poetry.utils.PoetryCache;
+import com.ld.poetry.utils.UCache;
 import com.ld.poetry.utils.PoetryEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -57,33 +57,33 @@ public class UtopianApplicationRunner implements ApplicationRunner {
         List<WebInfo> list = wrapper.list();
         if (!CollectionUtils.isEmpty(list)) {
             list.get(0).setDefaultStoreType(defaultType);
-            PoetryCache.put(CommonConst.WEB_INFO, list.get(0));
+            UCache.put(CommonConst.WEB_INFO, list.get(0));
         }
 
         List<Sort> sortInfo = commonQuery.getSortInfo();
         if (!CollectionUtils.isEmpty(sortInfo)) {
-            PoetryCache.put(CommonConst.SORT_INFO, sortInfo);
+            UCache.put(CommonConst.SORT_INFO, sortInfo);
         }
 
         User admin = userService.lambdaQuery().eq(User::getUserType, PoetryEnum.USER_TYPE_ADMIN.getCode()).one();
-        PoetryCache.put(CommonConst.ADMIN, admin);
+        UCache.put(CommonConst.ADMIN, admin);
 
         Family family = familyService.lambdaQuery().eq(Family::getUserId, admin.getId()).one();
-        PoetryCache.put(CommonConst.ADMIN_FAMILY, family);
+        UCache.put(CommonConst.ADMIN_FAMILY, family);
 
         List<HistoryInfo> infoList = new LambdaQueryChainWrapper<>(historyInfoMapper)
                 .select(HistoryInfo::getIp, HistoryInfo::getUserId)
                 .ge(HistoryInfo::getCreateTime, LocalDateTime.now().with(LocalTime.MIN))
                 .list();
 
-        PoetryCache.put(CommonConst.IP_HISTORY, new CopyOnWriteArraySet<>(infoList.stream().map(info -> info.getIp() + (info.getUserId() != null ? "_" + info.getUserId().toString() : "")).collect(Collectors.toList())));
+        UCache.put(CommonConst.IP_HISTORY, new CopyOnWriteArraySet<>(infoList.stream().map(info -> info.getIp() + (info.getUserId() != null ? "_" + info.getUserId().toString() : "")).collect(Collectors.toList())));
 
         Map<String, Object> history = new HashMap<>();
         history.put(CommonConst.IP_HISTORY_PROVINCE, historyInfoMapper.getHistoryByProvince());
         history.put(CommonConst.IP_HISTORY_IP, historyInfoMapper.getHistoryByIp());
         history.put(CommonConst.IP_HISTORY_HOUR, historyInfoMapper.getHistoryBy24Hour());
         history.put(CommonConst.IP_HISTORY_COUNT, historyInfoMapper.getHistoryCount());
-        PoetryCache.put(CommonConst.IP_HISTORY_STATISTICS, history);
+        UCache.put(CommonConst.IP_HISTORY_STATISTICS, history);
 
 
     }

@@ -26,7 +26,7 @@ public class LoginCheckAspect {
             throw new PoetryLoginException(CodeMsg.NOT_LOGIN.getMsg());
         }
 
-        User user = (User) PoetryCache.get(token);
+        User user = (User) UCache.get(token);
 
         if (user == null) {
             throw new PoetryLoginException(CodeMsg.LOGIN_EXPIRED.getMsg());
@@ -34,12 +34,12 @@ public class LoginCheckAspect {
 
         if (token.contains(CommonConst.USER_ACCESS_TOKEN)) {
             if (loginCheck.value() == PoetryEnum.USER_TYPE_ADMIN.getCode() || loginCheck.value() == PoetryEnum.USER_TYPE_DEV.getCode()) {
-                return PoetryResult.fail("请输入管理员账号！");
+                return UResult.fail("请输入管理员账号！");
             }
         } else if (token.contains(CommonConst.ADMIN_ACCESS_TOKEN)) {
             log.info("请求IP：" + PoetryUtil.getIpAddr(PoetryUtil.getRequest()));
             if (loginCheck.value() == PoetryEnum.USER_TYPE_ADMIN.getCode() && user.getId().intValue() != CommonConst.ADMIN_USER_ID) {
-                return PoetryResult.fail("请输入管理员账号！");
+                return UResult.fail("请输入管理员账号！");
             }
         } else {
             throw new PoetryLoginException(CodeMsg.NOT_LOGIN.getMsg());
@@ -53,28 +53,28 @@ public class LoginCheckAspect {
         String userId = user.getId().toString();
         boolean flag1 = false;
         if (token.contains(CommonConst.USER_ACCESS_TOKEN)) {
-            flag1 = PoetryCache.get(CommonConst.USER_TOKEN_INTERVAL + userId) == null;
+            flag1 = UCache.get(CommonConst.USER_TOKEN_INTERVAL + userId) == null;
         } else if (token.contains(CommonConst.ADMIN_ACCESS_TOKEN)) {
-            flag1 = PoetryCache.get(CommonConst.ADMIN_TOKEN_INTERVAL + userId) == null;
+            flag1 = UCache.get(CommonConst.ADMIN_TOKEN_INTERVAL + userId) == null;
         }
 
         if (flag1) {
             synchronized (userId.intern()) {
                 boolean flag2 = false;
                 if (token.contains(CommonConst.USER_ACCESS_TOKEN)) {
-                    flag2 = PoetryCache.get(CommonConst.USER_TOKEN_INTERVAL + userId) == null;
+                    flag2 = UCache.get(CommonConst.USER_TOKEN_INTERVAL + userId) == null;
                 } else if (token.contains(CommonConst.ADMIN_ACCESS_TOKEN)) {
-                    flag2 = PoetryCache.get(CommonConst.ADMIN_TOKEN_INTERVAL + userId) == null;
+                    flag2 = UCache.get(CommonConst.ADMIN_TOKEN_INTERVAL + userId) == null;
                 }
 
                 if (flag2) {
-                    PoetryCache.put(token, user, CommonConst.TOKEN_EXPIRE);
+                    UCache.put(token, user, CommonConst.TOKEN_EXPIRE);
                     if (token.contains(CommonConst.USER_ACCESS_TOKEN)) {
-                        PoetryCache.put(CommonConst.USER_TOKEN + userId, token, CommonConst.TOKEN_EXPIRE);
-                        PoetryCache.put(CommonConst.USER_TOKEN_INTERVAL + userId, token, CommonConst.TOKEN_INTERVAL);
+                        UCache.put(CommonConst.USER_TOKEN + userId, token, CommonConst.TOKEN_EXPIRE);
+                        UCache.put(CommonConst.USER_TOKEN_INTERVAL + userId, token, CommonConst.TOKEN_INTERVAL);
                     } else if (token.contains(CommonConst.ADMIN_ACCESS_TOKEN)) {
-                        PoetryCache.put(CommonConst.ADMIN_TOKEN + userId, token, CommonConst.TOKEN_EXPIRE);
-                        PoetryCache.put(CommonConst.ADMIN_TOKEN_INTERVAL + userId, token, CommonConst.TOKEN_INTERVAL);
+                        UCache.put(CommonConst.ADMIN_TOKEN + userId, token, CommonConst.TOKEN_EXPIRE);
+                        UCache.put(CommonConst.ADMIN_TOKEN_INTERVAL + userId, token, CommonConst.TOKEN_INTERVAL);
                     }
                 }
             }

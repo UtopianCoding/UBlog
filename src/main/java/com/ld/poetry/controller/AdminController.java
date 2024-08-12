@@ -82,7 +82,7 @@ public class AdminController {
                 .eq(User::getId, userId)
                 .set(User::getAdmire, admire)
                 .update();
-        PoetryCache.remove(CommonConst.ADMIRE);
+        UCache.remove(CommonConst.ADMIRE);
         return UResult.success();
     }
 
@@ -102,16 +102,16 @@ public class AdminController {
     }
 
     private void logout(Integer userId) {
-        if (PoetryCache.get(CommonConst.ADMIN_TOKEN + userId) != null) {
-            String token = (String) PoetryCache.get(CommonConst.ADMIN_TOKEN + userId);
-            PoetryCache.remove(CommonConst.ADMIN_TOKEN + userId);
-            PoetryCache.remove(token);
+        if (UCache.get(CommonConst.ADMIN_TOKEN + userId) != null) {
+            String token = (String) UCache.get(CommonConst.ADMIN_TOKEN + userId);
+            UCache.remove(CommonConst.ADMIN_TOKEN + userId);
+            UCache.remove(token);
         }
 
-        if (PoetryCache.get(CommonConst.USER_TOKEN + userId) != null) {
-            String token = (String) PoetryCache.get(CommonConst.USER_TOKEN + userId);
-            PoetryCache.remove(CommonConst.USER_TOKEN + userId);
-            PoetryCache.remove(token);
+        if (UCache.get(CommonConst.USER_TOKEN + userId) != null) {
+            String token = (String) UCache.get(CommonConst.USER_TOKEN + userId);
+            UCache.remove(CommonConst.USER_TOKEN + userId);
+            UCache.remove(token);
         }
 
     }

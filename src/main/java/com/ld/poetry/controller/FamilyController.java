@@ -8,7 +8,7 @@ import com.ld.poetry.entity.Family;
 import com.ld.poetry.service.FamilyService;
 import com.ld.poetry.utils.CommonConst;
 import com.ld.poetry.utils.CommonQuery;
-import com.ld.poetry.utils.PoetryCache;
+import com.ld.poetry.utils.UCache;
 import com.ld.poetry.utils.PoetryUtil;
 import com.ld.poetry.vo.BaseRequestVO;
 import com.ld.poetry.vo.FamilyVO;
@@ -53,9 +53,9 @@ public class FamilyController {
             familyService.save(family);
         }
         if (userId.intValue() == PoetryUtil.getAdminUser().getId().intValue()) {
-            PoetryCache.put(CommonConst.ADMIN_FAMILY, family);
+            UCache.put(CommonConst.ADMIN_FAMILY, family);
         }
-        PoetryCache.remove(CommonConst.FAMILY_LIST);
+        UCache.remove(CommonConst.FAMILY_LIST);
         return UResult.success();
     }
 
@@ -66,7 +66,7 @@ public class FamilyController {
     @LoginCheck(0)
     public UResult deleteFamily(@RequestParam("id") Integer id) {
         familyService.removeById(id);
-        PoetryCache.remove(CommonConst.FAMILY_LIST);
+        UCache.remove(CommonConst.FAMILY_LIST);
         return UResult.success();
     }
 
@@ -92,7 +92,7 @@ public class FamilyController {
      */
     @GetMapping("/getAdminFamily")
     public UResult<FamilyVO> getAdminFamily() {
-        Family family = (Family) PoetryCache.get(CommonConst.ADMIN_FAMILY);
+        Family family = (Family) UCache.get(CommonConst.ADMIN_FAMILY);
 //        if (family == null) {
 //            return UResult.fail("请根据文档【https://poetize.cn/article?id=26】初始化表白墙");
 //        }
@@ -133,7 +133,7 @@ public class FamilyController {
     @LoginCheck(0)
     public UResult changeLoveStatus(@RequestParam("id") Integer id, @RequestParam("flag") Boolean flag) {
         familyService.lambdaUpdate().eq(Family::getId, id).set(Family::getStatus, flag).update();
-        PoetryCache.remove(CommonConst.FAMILY_LIST);
+        UCache.remove(CommonConst.FAMILY_LIST);
         return UResult.success();
     }
 }

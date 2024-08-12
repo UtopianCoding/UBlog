@@ -83,7 +83,7 @@ public class TimeTaskSet {
             BigDecimal auInKm = new BigDecimal("149597870.7");
             BigDecimal distanceInAU = distanceInKm.divide(auInKm, 6, RoundingMode.HALF_UP);
             distances.setAu(distanceInAU);
-            System.out.println(distances);
+
             statMapper.updateDistances(distances);
         }
     }

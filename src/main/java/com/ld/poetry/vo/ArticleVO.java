@@ -68,4 +68,6 @@ public class ArticleVO {
     private Label label;
 
     private String abstractArticle;
+
+    private String videoUrl;
 }

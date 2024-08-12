@@ -20,7 +20,7 @@ public class PoetryUtil {
     }
 
     public static void checkEmail() {
-        User user = (User) PoetryCache.get(PoetryUtil.getToken());
+        User user = (User) UCache.get(PoetryUtil.getToken());
         if (!StringUtils.hasText(user.getEmail())) {
             throw new PoetryRuntimeException("请先绑定邮箱！");
         }
@@ -31,27 +31,27 @@ public class PoetryUtil {
     }
 
     public static User getCurrentUser() {
-        User user = (User) PoetryCache.get(PoetryUtil.getToken());
+        User user = (User) UCache.get(PoetryUtil.getToken());
         return user;
     }
 
     public static User getAdminUser() {
-        User admin = (User) PoetryCache.get(CommonConst.ADMIN);
+        User admin = (User) UCache.get(CommonConst.ADMIN);
         return admin;
     }
 
     public static Integer getUserId() {
-        User user = (User) PoetryCache.get(PoetryUtil.getToken());
+        User user = (User) UCache.get(PoetryUtil.getToken());
         return user == null ? null : user.getId();
     }
 
     public static String getUsername() {
-        User user = (User) PoetryCache.get(PoetryUtil.getToken());
+        User user = (User) UCache.get(PoetryUtil.getToken());
         return user == null ? null : user.getUsername();
     }
 
     public static String getRandomAvatar(String key) {
-        WebInfo webInfo = (WebInfo) PoetryCache.get(CommonConst.WEB_INFO);
+        WebInfo webInfo = (WebInfo) UCache.get(CommonConst.WEB_INFO);
         if (webInfo != null) {
             String randomAvatar = webInfo.getRandomAvatar();
             List<String> randomAvatars = JSON.parseArray(randomAvatar, String.class);
@@ -72,7 +72,7 @@ public class PoetryUtil {
     }
 
     public static String getRandomName(String key) {
-        WebInfo webInfo = (WebInfo) PoetryCache.get(CommonConst.WEB_INFO);
+        WebInfo webInfo = (WebInfo) UCache.get(CommonConst.WEB_INFO);
         if (webInfo != null) {
             String randomName = webInfo.getRandomName();
             List<String> randomNames = JSON.parseArray(randomName, String.class);
@@ -93,7 +93,7 @@ public class PoetryUtil {
     }
 
     public static String getRandomCover(String key) {
-        WebInfo webInfo = (WebInfo) PoetryCache.get(CommonConst.WEB_INFO);
+        WebInfo webInfo = (WebInfo) UCache.get(CommonConst.WEB_INFO);
         if (webInfo != null) {
             String randomCover = webInfo.getRandomCover();
             List<String> randomCovers = JSON.parseArray(randomCover, String.class);

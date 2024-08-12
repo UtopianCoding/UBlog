@@ -7,7 +7,7 @@ import com.ld.poetry.config.SaveCheck;
 import com.ld.poetry.service.CommentService;
 import com.ld.poetry.utils.CommonConst;
 import com.ld.poetry.utils.CommonQuery;
-import com.ld.poetry.utils.PoetryCache;
+import com.ld.poetry.utils.UCache;
 import com.ld.poetry.utils.StringUtil;
 import com.ld.poetry.vo.BaseRequestVO;
 import com.ld.poetry.vo.CommentVO;
@@ -45,7 +45,7 @@ public class CommentController {
         }
         commentVO.setCommentContent(content);
 
-        PoetryCache.remove(CommonConst.COMMENT_COUNT_CACHE + commentVO.getSource().toString() + "_" + commentVO.getType());
+        UCache.remove(CommonConst.COMMENT_COUNT_CACHE + commentVO.getSource().toString() + "_" + commentVO.getType());
         return commentService.saveComment(commentVO);
     }
 

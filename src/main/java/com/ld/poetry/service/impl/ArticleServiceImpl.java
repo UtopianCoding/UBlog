@@ -64,6 +64,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         if (StringUtils.hasText(articleVO.getArticleCover())) {
             article.setArticleCover(articleVO.getArticleCover());
         }
+        if (StringUtils.hasText(articleVO.getVideoUrl())) {
+            article.setVideoUrl(articleVO.getVideoUrl());
+        }
         if (articleVO.getViewStatus() != null && !articleVO.getViewStatus() && StringUtils.hasText(articleVO.getPassword())) {
             article.setPassword(articleVO.getPassword());
             article.setTips(articleVO.getTips());
@@ -81,7 +84,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
         List<Sort> sortInfo = commonQuery.getSortInfo();
         if (!CollectionUtils.isEmpty(sortInfo)) {
-            PoetryCache.put(CommonConst.SORT_INFO, sortInfo);
+            UCache.put(CommonConst.SORT_INFO, sortInfo);
         }
 
         try {
@@ -96,7 +99,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
                     LambdaQueryChainWrapper<Label> wrapper = new LambdaQueryChainWrapper<>(labelMapper);
                     Label label = wrapper.select(Label::getLabelName).eq(Label::getId, articleVO.getLabelId()).one();
                     String text = getSubscribeMail(label.getLabelName(), articleVO.getArticleTitle());
-                    WebInfo webInfo = (WebInfo) PoetryCache.get(CommonConst.WEB_INFO);
+                    WebInfo webInfo = (WebInfo) UCache.get(CommonConst.WEB_INFO);
                     mailUtil.sendMailMessage(emails, "您有一封来自" + (webInfo == null ? "Poetize" : webInfo.getWebName()) + "的回执！", text);
                 }
             }
@@ -107,7 +110,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     }
 
     private String getSubscribeMail(String labelName, String articleTitle) {
-        WebInfo webInfo = (WebInfo) PoetryCache.get(CommonConst.WEB_INFO);
+        WebInfo webInfo = (WebInfo) UCache.get(CommonConst.WEB_INFO);
         String webName = (webInfo == null ? "Poetize" : webInfo.getWebName());
         return String.format(mailUtil.getMailText(),
                 webName,
@@ -126,7 +129,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
                 .remove();
         List<Sort> sortInfo = commonQuery.getSortInfo();
         if (!CollectionUtils.isEmpty(sortInfo)) {
-            PoetryCache.put(CommonConst.SORT_INFO, sortInfo);
+            UCache.put(CommonConst.SORT_INFO, sortInfo);
         }
         return UResult.success();
     }
@@ -169,7 +172,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         updateChainWrapper.update();
         List<Sort> sortInfo = commonQuery.getSortInfo();
         if (!CollectionUtils.isEmpty(sortInfo)) {
-            PoetryCache.put(CommonConst.SORT_INFO, sortInfo);
+            UCache.put(CommonConst.SORT_INFO, sortInfo);
         }
         return UResult.success();
     }
@@ -324,7 +327,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
     @Override
     public UResult<Map<Integer, List<ArticleVO>>> listSortArticle() {
-        Map<Integer, List<ArticleVO>> result = (Map<Integer, List<ArticleVO>>) PoetryCache.get(CommonConst.SORT_ARTICLE_LIST);
+        Map<Integer, List<ArticleVO>> result = (Map<Integer, List<ArticleVO>>) UCache.get(CommonConst.SORT_ARTICLE_LIST);
         if (result != null) {
             return UResult.success(result);
         }
@@ -353,7 +356,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             map.put(sort.getId(), articleVOList);
         }
 
-        PoetryCache.put(CommonConst.SORT_ARTICLE_LIST, map, CommonConst.TOKEN_INTERVAL);
+        UCache.put(CommonConst.SORT_ARTICLE_LIST, map, CommonConst.TOKEN_INTERVAL);
         return UResult.success(map);
     }
 
@@ -378,7 +381,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             articleVO.setCommentCount(0);
         }
 
-        List<Sort> sortInfo = (List<Sort>) PoetryCache.get(CommonConst.SORT_INFO);
+        List<Sort> sortInfo = (List<Sort>) UCache.get(CommonConst.SORT_INFO);
         if (sortInfo != null) {
             for (Sort s : sortInfo) {
                 if (s.getId().intValue() == articleVO.getSortId().intValue()) {
