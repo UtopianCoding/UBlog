@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@MapperScan({"com.ld.poetry.dao", "com.ld.poetry.im.http.dao"})
+@MapperScan({"com.ld.poetry.dao"})
 public class MybatisPlusConfig {
 
     @Bean

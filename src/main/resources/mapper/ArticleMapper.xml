@@ -29,5 +29,8 @@
     <sql id="Base_Column_List">
         id, user_id, sort_id, label_id, article_cover, article_title, article_content, password, tips, view_status, recommend_status, view_count, like_count, comment_status, create_time, update_time, update_by, deleted
     </sql>
+    <update id="updateAbartById">
+        update article set abstractArticle=#{abstractArticle} where id=#{id}
+    </update>
 
 </mapper>

@@ -1,5 +1,6 @@
 package com.ld.poetry.service.impl;
 
+import cn.hutool.crypto.SecureUtil;
 import com.alibaba.dashscope.exception.ApiException;
 import com.alibaba.dashscope.exception.InputRequiredException;
 import com.alibaba.dashscope.exception.NoApiKeyException;
@@ -27,6 +28,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -248,6 +250,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         if (!article.getViewStatus() && (!StringUtils.hasText(password) || !password.equals(article.getPassword()))) {
             return UResult.fail("密码错误" + (StringUtils.hasText(article.getTips()) ? article.getTips() : "请联系作者获取密码"));
         }
+        if (StringUtils.hasText(article.getVideoUrl())) {
+            article.setVideoUrl(SecureUtil.aes(CommonConst.CRYPOTJS_KEY.getBytes(StandardCharsets.UTF_8)).encryptBase64(article.getVideoUrl()));
+        }
         article.setPassword(null);
         articleMapper.updateViewCount(id);
         ArticleVO articleVO = buildArticleVO(article, false);
@@ -258,14 +263,14 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             String regex = "https?://|\\*|#|`";
             String content = articleVO.getArticleContent().replaceAll(regex, "");
             String abart="";
-//            try {
-////                abart = AbstractArticle.callWithMessage(content).replace(regex,"");
-//            }  catch (ApiException | NoApiKeyException | InputRequiredException e) {
-//                System.out.println(e.getMessage());
-//            }
+            try {
+                abart = AbstractArticle.callWithMessage(content).replace(regex,"");
+            }  catch (ApiException | NoApiKeyException | InputRequiredException e) {
+                System.out.println(e.getMessage());
+            }
             articleVO.setAbstractArticle(abart);
             article.setAbstractArticle(abart);
-            articleMapper.updateById(article);
+            articleMapper.updateAbartById(article);
             return UResult.success(articleVO);
         }
 
