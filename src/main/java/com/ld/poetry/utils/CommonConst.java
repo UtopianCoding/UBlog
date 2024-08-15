@@ -238,4 +238,7 @@ public class CommonConst {
      * 友情链接
      */
     public static final String DEFAULT_FRIEND = "\uD83E\uDD47友情链接";
+
+
+    public static final String REQUEST_IP = "request_ip";
 }

@@ -104,7 +104,7 @@ public class CommonQuery {
 //    }
 
     public void saveHistory(String ip) {
-        Integer userId = PoetryUtil.getUserId();
+        Integer userId = UBUtil.getUserId();
         String ipUser = ip + (userId != null ? "_" + userId.toString() : "");
 
         CopyOnWriteArraySet<String> ipHistory = (CopyOnWriteArraySet<String>) UCache.get(CommonConst.IP_HISTORY);

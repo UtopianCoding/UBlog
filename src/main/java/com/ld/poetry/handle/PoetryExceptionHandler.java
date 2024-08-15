@@ -3,7 +3,7 @@ package com.ld.poetry.handle;
 import com.alibaba.fastjson.JSON;
 import com.ld.poetry.config.UResult;
 import com.ld.poetry.utils.CodeMsg;
-import com.ld.poetry.utils.PoetryUtil;
+import com.ld.poetry.utils.UBUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -22,7 +22,7 @@ public class PoetryExceptionHandler {
     @ExceptionHandler(Exception.class)
     @ResponseBody
     public UResult handlerException(Exception ex) {
-        log.error("请求URL-----------------" + PoetryUtil.getRequest().getRequestURL());
+        log.error("请求URL-----------------" + UBUtil.getRequest().getRequestURL());
         log.error("出错啦------------------", ex);
         if (ex instanceof PoetryRuntimeException) {
             PoetryRuntimeException e = (PoetryRuntimeException) ex;

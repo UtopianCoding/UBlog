@@ -13,25 +13,25 @@ import javax.servlet.http.HttpServletRequest;
 import java.net.InetAddress;
 import java.util.List;
 
-public class PoetryUtil {
+public class UBUtil {
 
     public static HttpServletRequest getRequest() {
         return ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
     }
 
     public static void checkEmail() {
-        User user = (User) UCache.get(PoetryUtil.getToken());
+        User user = (User) UCache.get(UBUtil.getToken());
         if (!StringUtils.hasText(user.getEmail())) {
             throw new PoetryRuntimeException("请先绑定邮箱！");
         }
     }
 
     public static String getToken() {
-        return PoetryUtil.getRequest().getHeader(CommonConst.TOKEN_HEADER);
+        return UBUtil.getRequest().getHeader(CommonConst.TOKEN_HEADER);
     }
 
     public static User getCurrentUser() {
-        User user = (User) UCache.get(PoetryUtil.getToken());
+        User user = (User) UCache.get(UBUtil.getToken());
         return user;
     }
 
@@ -41,12 +41,12 @@ public class PoetryUtil {
     }
 
     public static Integer getUserId() {
-        User user = (User) UCache.get(PoetryUtil.getToken());
+        User user = (User) UCache.get(UBUtil.getToken());
         return user == null ? null : user.getId();
     }
 
     public static String getUsername() {
-        User user = (User) UCache.get(PoetryUtil.getToken());
+        User user = (User) UCache.get(UBUtil.getToken());
         return user == null ? null : user.getUsername();
     }
 
@@ -57,11 +57,11 @@ public class PoetryUtil {
             List<String> randomAvatars = JSON.parseArray(randomAvatar, String.class);
             if (!CollectionUtils.isEmpty(randomAvatars)) {
                 if (StringUtils.hasText(key)) {
-                    return randomAvatars.get(PoetryUtil.hashLocation(key, randomAvatars.size()));
+                    return randomAvatars.get(UBUtil.hashLocation(key, randomAvatars.size()));
                 } else {
-                    String ipAddr = PoetryUtil.getIpAddr(PoetryUtil.getRequest());
+                    String ipAddr = UBUtil.getIpAddr(UBUtil.getRequest());
                     if (StringUtils.hasText(ipAddr)) {
-                        return randomAvatars.get(PoetryUtil.hashLocation(ipAddr, randomAvatars.size()));
+                        return randomAvatars.get(UBUtil.hashLocation(ipAddr, randomAvatars.size()));
                     } else {
                         return randomAvatars.get(0);
                     }
@@ -78,11 +78,11 @@ public class PoetryUtil {
             List<String> randomNames = JSON.parseArray(randomName, String.class);
             if (!CollectionUtils.isEmpty(randomNames)) {
                 if (StringUtils.hasText(key)) {
-                    return randomNames.get(PoetryUtil.hashLocation(key, randomNames.size()));
+                    return randomNames.get(UBUtil.hashLocation(key, randomNames.size()));
                 } else {
-                    String ipAddr = PoetryUtil.getIpAddr(PoetryUtil.getRequest());
+                    String ipAddr = UBUtil.getIpAddr(UBUtil.getRequest());
                     if (StringUtils.hasText(ipAddr)) {
-                        return randomNames.get(PoetryUtil.hashLocation(ipAddr, randomNames.size()));
+                        return randomNames.get(UBUtil.hashLocation(ipAddr, randomNames.size()));
                     } else {
                         return randomNames.get(0);
                     }
@@ -99,11 +99,11 @@ public class PoetryUtil {
             List<String> randomCovers = JSON.parseArray(randomCover, String.class);
             if (!CollectionUtils.isEmpty(randomCovers)) {
                 if (StringUtils.hasText(key)) {
-                    return randomCovers.get(PoetryUtil.hashLocation(key, randomCovers.size()));
+                    return randomCovers.get(UBUtil.hashLocation(key, randomCovers.size()));
                 } else {
-                    String ipAddr = PoetryUtil.getIpAddr(PoetryUtil.getRequest());
+                    String ipAddr = UBUtil.getIpAddr(UBUtil.getRequest());
                     if (StringUtils.hasText(ipAddr)) {
-                        return randomCovers.get(PoetryUtil.hashLocation(ipAddr, randomCovers.size()));
+                        return randomCovers.get(UBUtil.hashLocation(ipAddr, randomCovers.size()));
                     } else {
                         return randomCovers.get(0);
                     }

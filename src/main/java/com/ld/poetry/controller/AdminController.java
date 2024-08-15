@@ -162,7 +162,7 @@ public class AdminController {
                                             @RequestParam(value = "recommendStatus", required = false) Boolean recommendStatus) {
         LambdaUpdateChainWrapper<Article> updateChainWrapper = articleService.lambdaUpdate()
                 .eq(Article::getId, articleId)
-                .eq(Article::getUserId, PoetryUtil.getUserId());
+                .eq(Article::getUserId, UBUtil.getUserId());
         if (viewStatus != null) {
             updateChainWrapper.set(Article::getViewStatus, viewStatus);
         }
@@ -199,7 +199,7 @@ public class AdminController {
             return UResult.fail("权限不足！");
         }
         Article one = articleService.lambdaQuery().eq(Article::getId, comment.getSource()).select(Article::getUserId).one();
-        if (one == null || (PoetryUtil.getUserId().intValue() != one.getUserId().intValue())) {
+        if (one == null || (UBUtil.getUserId().intValue() != one.getUserId().intValue())) {
             return UResult.fail("权限不足！");
         }
         commentService.removeById(id);

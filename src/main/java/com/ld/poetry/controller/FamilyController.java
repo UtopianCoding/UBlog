@@ -9,7 +9,7 @@ import com.ld.poetry.service.FamilyService;
 import com.ld.poetry.utils.CommonConst;
 import com.ld.poetry.utils.CommonQuery;
 import com.ld.poetry.utils.UCache;
-import com.ld.poetry.utils.PoetryUtil;
+import com.ld.poetry.utils.UBUtil;
 import com.ld.poetry.vo.BaseRequestVO;
 import com.ld.poetry.vo.FamilyVO;
 import org.springframework.beans.BeanUtils;
@@ -39,7 +39,7 @@ public class FamilyController {
     @PostMapping("/saveFamily")
     @LoginCheck
     public UResult saveFamily(@Validated @RequestBody FamilyVO familyVO) {
-        Integer userId = PoetryUtil.getUserId();
+        Integer userId = UBUtil.getUserId();
         familyVO.setUserId(userId);
         Family oldFamily = familyService.lambdaQuery().select(Family::getId).eq(Family::getUserId, userId).one();
         Family family = new Family();
@@ -52,7 +52,7 @@ public class FamilyController {
             family.setId(null);
             familyService.save(family);
         }
-        if (userId.intValue() == PoetryUtil.getAdminUser().getId().intValue()) {
+        if (userId.intValue() == UBUtil.getAdminUser().getId().intValue()) {
             UCache.put(CommonConst.ADMIN_FAMILY, family);
         }
         UCache.remove(CommonConst.FAMILY_LIST);
@@ -76,7 +76,7 @@ public class FamilyController {
     @GetMapping("/getFamily")
     @LoginCheck
     public UResult<FamilyVO> getFamily() {
-        Integer userId = PoetryUtil.getUserId();
+        Integer userId = UBUtil.getUserId();
         Family family = familyService.lambdaQuery().eq(Family::getUserId, userId).one();
         if (family == null) {
             return UResult.success();

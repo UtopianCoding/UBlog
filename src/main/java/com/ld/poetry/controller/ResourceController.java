@@ -48,7 +48,7 @@ public class ResourceController {
         re.setSize(resource.getSize());
         re.setMimeType(resource.getMimeType());
         re.setStoreType(resource.getStoreType());
-        re.setUserId(PoetryUtil.getUserId());
+        re.setUserId(UBUtil.getUserId());
         resourceService.save(re);
         return UResult.success();
     }
@@ -73,7 +73,7 @@ public class ResourceController {
         re.setSize(Integer.valueOf(Long.toString(file.getSize())));
         re.setMimeType(file.getContentType());
         re.setStoreType(fileVO.getStoreType());
-        re.setUserId(PoetryUtil.getUserId());
+        re.setUserId(UBUtil.getUserId());
         resourceService.save(re);
         return UResult.success(result.getVisitPath());
     }
@@ -103,7 +103,7 @@ public class ResourceController {
         List<Resource> list = resourceService.lambdaQuery().select(Resource::getPath)
                 .eq(Resource::getType, CommonConst.PATH_TYPE_INTERNET_MEME)
                 .eq(Resource::getStatus, PoetryEnum.STATUS_ENABLE.getCode())
-                .eq(Resource::getUserId, PoetryUtil.getAdminUser().getId())
+                .eq(Resource::getUserId, UBUtil.getAdminUser().getId())
                 .orderByDesc(Resource::getCreateTime)
                 .list();
         List<String> paths = list.stream().map(Resource::getPath).collect(Collectors.toList());

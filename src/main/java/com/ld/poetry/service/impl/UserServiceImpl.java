@@ -120,8 +120,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public UResult exit() {
-        String token = PoetryUtil.getToken();
-        Integer userId = PoetryUtil.getUserId();
+        String token = UBUtil.getToken();
+        Integer userId = UBUtil.getUserId();
         if (token.contains(CommonConst.USER_ACCESS_TOKEN)) {
             UCache.remove(CommonConst.USER_TOKEN + userId);
         } else if (token.contains(CommonConst.ADMIN_ACCESS_TOKEN)) {
@@ -186,7 +186,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         u.setPhoneNumber(user.getPhoneNumber());
         u.setEmail(user.getEmail());
         u.setPassword(DigestUtils.md5DigestAsHex(user.getPassword().getBytes()));
-        u.setAvatar(PoetryUtil.getRandomAvatar(null));
+        u.setAvatar(UBUtil.getRandomAvatar(null));
         save(u);
 
         User one = lambdaQuery().eq(User::getId, u.getId()).one();
@@ -224,32 +224,32 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 return UResult.fail("用户名不能包含@！");
             }
 
-            Integer count = lambdaQuery().eq(User::getUsername, user.getUsername()).ne(User::getId, PoetryUtil.getUserId()).count();
+            Integer count = lambdaQuery().eq(User::getUsername, user.getUsername()).ne(User::getId, UBUtil.getUserId()).count();
             if (count != 0) {
                 return UResult.fail("用户名重复！");
             }
         }
         User u = new User();
-        u.setId(PoetryUtil.getUserId());
+        u.setId(UBUtil.getUserId());
         u.setUsername(user.getUsername());
         u.setAvatar(user.getAvatar());
         u.setGender(user.getGender());
         u.setIntroduction(user.getIntroduction());
         updateById(u);
         User one = lambdaQuery().eq(User::getId, u.getId()).one();
-        UCache.put(PoetryUtil.getToken(), one, CommonConst.TOKEN_EXPIRE);
-        UCache.put(CommonConst.USER_TOKEN + one.getId(), PoetryUtil.getToken(), CommonConst.TOKEN_EXPIRE);
+        UCache.put(UBUtil.getToken(), one, CommonConst.TOKEN_EXPIRE);
+        UCache.put(CommonConst.USER_TOKEN + one.getId(), UBUtil.getToken(), CommonConst.TOKEN_EXPIRE);
 
         UserVO userVO = new UserVO();
         BeanUtils.copyProperties(one, userVO);
         userVO.setPassword(null);
-        userVO.setAccessToken(PoetryUtil.getToken());
+        userVO.setAccessToken(UBUtil.getToken());
         return UResult.success(userVO);
     }
 
     @Override
     public UResult getCode(Integer flag) {
-        User user = PoetryUtil.getCurrentUser();
+        User user = UBUtil.getCurrentUser();
         int i = new Random().nextInt(900000) + 100000;
         if (flag == 1) {
             if (!StringUtils.hasText(user.getPhoneNumber())) {
@@ -281,7 +281,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 return UResult.fail("验证码发送次数过多，请明天再试！");
             }
         }
-        UCache.put(CommonConst.USER_CODE + PoetryUtil.getUserId() + "_" + flag, Integer.valueOf(i), 300);
+        UCache.put(CommonConst.USER_CODE + UBUtil.getUserId() + "_" + flag, Integer.valueOf(i), 300);
         return UResult.success();
     }
 
@@ -309,7 +309,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 return UResult.fail("验证码发送次数过多，请明天再试！");
             }
         }
-        UCache.put(CommonConst.USER_CODE + PoetryUtil.getUserId() + "_" + place + "_" + flag, Integer.valueOf(i), 300);
+        UCache.put(CommonConst.USER_CODE + UBUtil.getUserId() + "_" + place + "_" + flag, Integer.valueOf(i), 300);
         return UResult.success();
     }
 
@@ -317,7 +317,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public UResult<UserVO> updateSecretInfo(String place, Integer flag, String code, String password) {
         password = new String(SecureUtil.aes(CommonConst.CRYPOTJS_KEY.getBytes(StandardCharsets.UTF_8)).decrypt(password));
 
-        User user = PoetryUtil.getCurrentUser();
+        User user = UBUtil.getCurrentUser();
         if ((flag == 1 || flag == 2) && !DigestUtils.md5DigestAsHex(password.getBytes()).equals(user.getPassword())) {
             return UResult.fail("密码错误！");
         }
@@ -331,10 +331,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             if (count != 0) {
                 return UResult.fail("手机号重复！");
             }
-            Integer codeCache = (Integer) UCache.get(CommonConst.USER_CODE + PoetryUtil.getUserId() + "_" + place + "_" + flag);
+            Integer codeCache = (Integer) UCache.get(CommonConst.USER_CODE + UBUtil.getUserId() + "_" + place + "_" + flag);
             if (codeCache != null && codeCache.intValue() == Integer.parseInt(code)) {
 
-                UCache.remove(CommonConst.USER_CODE + PoetryUtil.getUserId() + "_" + place + "_" + flag);
+                UCache.remove(CommonConst.USER_CODE + UBUtil.getUserId() + "_" + place + "_" + flag);
 
                 updateUser.setPhoneNumber(place);
             } else {
@@ -346,10 +346,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             if (count != 0) {
                 return UResult.fail("邮箱重复！");
             }
-            Integer codeCache = (Integer) UCache.get(CommonConst.USER_CODE + PoetryUtil.getUserId() + "_" + place + "_" + flag);
+            Integer codeCache = (Integer) UCache.get(CommonConst.USER_CODE + UBUtil.getUserId() + "_" + place + "_" + flag);
             if (codeCache != null && codeCache.intValue() == Integer.parseInt(code)) {
 
-                UCache.remove(CommonConst.USER_CODE + PoetryUtil.getUserId() + "_" + place + "_" + flag);
+                UCache.remove(CommonConst.USER_CODE + UBUtil.getUserId() + "_" + place + "_" + flag);
 
                 updateUser.setEmail(place);
             } else {
@@ -365,8 +365,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         updateById(updateUser);
 
         User one = lambdaQuery().eq(User::getId, user.getId()).one();
-        UCache.put(PoetryUtil.getToken(), one, CommonConst.TOKEN_EXPIRE);
-        UCache.put(CommonConst.USER_TOKEN + one.getId(), PoetryUtil.getToken(), CommonConst.TOKEN_EXPIRE);
+        UCache.put(UBUtil.getToken(), one, CommonConst.TOKEN_EXPIRE);
+        UCache.put(CommonConst.USER_TOKEN + one.getId(), UBUtil.getToken(), CommonConst.TOKEN_EXPIRE);
 
         UserVO userVO = new UserVO();
         BeanUtils.copyProperties(one, userVO);
@@ -514,7 +514,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public UResult<UserVO> subscribe(Integer labelId, Boolean flag) {
         UserVO userVO = null;
-        User one = lambdaQuery().eq(User::getId, PoetryUtil.getUserId()).one();
+        User one = lambdaQuery().eq(User::getId, UBUtil.getUserId()).one();
         List<Integer> sub = JSON.parseArray(one.getSubscribe(), Integer.class);
         if (sub == null) sub = new ArrayList<>();
         if (flag) {
@@ -529,7 +529,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 BeanUtils.copyProperties(one, userVO);
                 userVO.setPassword(null);
                 userVO.setSubscribe(user.getSubscribe());
-                userVO.setAccessToken(PoetryUtil.getToken());
+                userVO.setAccessToken(UBUtil.getToken());
             }
         } else {
             if (sub.contains(labelId)) {
@@ -543,7 +543,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 BeanUtils.copyProperties(one, userVO);
                 userVO.setPassword(null);
                 userVO.setSubscribe(user.getSubscribe());
-                userVO.setAccessToken(PoetryUtil.getToken());
+                userVO.setAccessToken(UBUtil.getToken());
             }
         }
         return UResult.success(userVO);
@@ -554,8 +554,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         String webName = (webInfo == null ? "Poetize" : webInfo.getWebName());
         return String.format(mailUtil.getMailText(),
                 webName,
-                String.format(MailUtil.imMail, PoetryUtil.getAdminUser().getUsername()),
-                PoetryUtil.getAdminUser().getUsername(),
+                String.format(MailUtil.imMail, UBUtil.getAdminUser().getUsername()),
+                UBUtil.getAdminUser().getUsername(),
                 String.format(codeFormat, i),
                 "",
                 webName);

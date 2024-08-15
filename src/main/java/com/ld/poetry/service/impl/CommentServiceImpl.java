@@ -63,7 +63,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         comment.setParentCommentId(commentVO.getParentCommentId());
         comment.setFloorCommentId(commentVO.getFloorCommentId());
         comment.setParentUserId(commentVO.getParentUserId());
-        comment.setUserId(PoetryUtil.getUserId());
+        comment.setUserId(UBUtil.getUserId());
         if (StringUtils.hasText(commentVO.getCommentInfo())) {
             comment.setCommentInfo(commentVO.getCommentInfo());
         }
@@ -80,7 +80,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
 
     @Override
     public UResult deleteComment(Integer id) {
-        Integer userId = PoetryUtil.getUserId();
+        Integer userId = UBUtil.getUserId();
         lambdaUpdate().eq(Comment::getId, id)
                 .eq(Comment::getUserId, userId)
                 .remove();
@@ -146,7 +146,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
             }
             wrapper.orderByDesc(Comment::getCreateTime).page(baseRequestVO);
         } else {
-            List<Integer> userArticleIds = commonQuery.getUserArticleIds(PoetryUtil.getUserId());
+            List<Integer> userArticleIds = commonQuery.getUserArticleIds(UBUtil.getUserId());
             if (CollectionUtils.isEmpty(userArticleIds)) {
                 baseRequestVO.setTotal(0);
                 baseRequestVO.setRecords(new ArrayList());
@@ -173,7 +173,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         }
 
         if (!StringUtils.hasText(commentVO.getUsername())) {
-            commentVO.setUsername(PoetryUtil.getRandomName(commentVO.getUserId().toString()));
+            commentVO.setUsername(UBUtil.getRandomName(commentVO.getUserId().toString()));
         }
 
         if (commentVO.getParentUserId() != null) {
@@ -182,7 +182,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
                 commentVO.setParentUsername(u.getUsername());
             }
             if (!StringUtils.hasText(commentVO.getParentUsername())) {
-                commentVO.setParentUsername(PoetryUtil.getRandomName(commentVO.getParentUserId().toString()));
+                commentVO.setParentUsername(UBUtil.getRandomName(commentVO.getParentUserId().toString()));
             }
         }
         return commentVO;

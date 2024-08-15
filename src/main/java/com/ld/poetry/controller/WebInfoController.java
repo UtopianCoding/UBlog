@@ -210,7 +210,7 @@ public class WebInfoController {
             return UResult.fail("标题和资源类型不能为空！");
         }
         if (CommonConst.RESOURCE_PATH_TYPE_LOVE_PHOTO.equals(resourcePathVO.getType())) {
-            resourcePathVO.setRemark(PoetryUtil.getAdminUser().getId().toString());
+            resourcePathVO.setRemark(UBUtil.getAdminUser().getId().toString());
         }
         ResourcePath resourcePath = new ResourcePath();
         BeanUtils.copyProperties(resourcePathVO, resourcePath);
@@ -258,7 +258,7 @@ public class WebInfoController {
 //        friend.setIntroduction(resourcePathVO.getIntroduction());
 //        friend.setCover(resourcePathVO.getCover());
 //        friend.setUrl(resourcePathVO.getUrl());
-//        friend.setRemark(PoetryUtil.getUserId().toString());
+//        friend.setRemark(UBUtil.getUserId().toString());
 //        friend.setType(CommonConst.RESOURCE_PATH_TYPE_FRIEND);
 //        friend.setStatus(Boolean.FALSE);
 //        resourcePathMapper.insert(friend);
@@ -324,7 +324,7 @@ public class WebInfoController {
             return UResult.fail("Id不能为空！");
         }
         if (CommonConst.RESOURCE_PATH_TYPE_LOVE_PHOTO.equals(resourcePathVO.getType())) {
-            resourcePathVO.setRemark(PoetryUtil.getAdminUser().getId().toString());
+            resourcePathVO.setRemark(UBUtil.getAdminUser().getId().toString());
         }
         ResourcePath resourcePath = new ResourcePath();
         BeanUtils.copyProperties(resourcePathVO, resourcePath);
@@ -342,8 +342,8 @@ public class WebInfoController {
         wrapper.eq(StringUtils.hasText(baseRequestVO.getResourceType()), ResourcePath::getType, baseRequestVO.getResourceType());
         wrapper.eq(StringUtils.hasText(baseRequestVO.getClassify()), ResourcePath::getClassify, baseRequestVO.getClassify());
 
-        Integer userId = PoetryUtil.getUserId();
-        if (!PoetryUtil.getAdminUser().getId().equals(userId)) {
+        Integer userId = UBUtil.getUserId();
+        if (!UBUtil.getAdminUser().getId().equals(userId)) {
             wrapper.eq(ResourcePath::getStatus, Boolean.TRUE);
         } else {
             wrapper.eq(baseRequestVO.getStatus() != null, ResourcePath::getStatus, baseRequestVO.getStatus());
@@ -447,7 +447,7 @@ public class WebInfoController {
         QueryWrapper<ResourcePath> queryWrapper = new QueryWrapper<>();
         queryWrapper.select("classify, count(*) as count")
                 .eq("status", Boolean.TRUE)
-                .eq("remark", PoetryUtil.getAdminUser().getId().toString())
+                .eq("remark", UBUtil.getAdminUser().getId().toString())
                 .eq("type", CommonConst.RESOURCE_PATH_TYPE_LOVE_PHOTO)
                 .groupBy("classify");
         List<Map<String, Object>> maps = resourcePathMapper.selectMaps(queryWrapper);
@@ -469,7 +469,7 @@ public class WebInfoController {
         lovePhoto.setClassify(resourcePathVO.getClassify());
         lovePhoto.setTitle(resourcePathVO.getTitle());
         lovePhoto.setCover(resourcePathVO.getCover());
-        lovePhoto.setRemark(PoetryUtil.getUserId().toString());
+        lovePhoto.setRemark(UBUtil.getUserId().toString());
         lovePhoto.setType(CommonConst.RESOURCE_PATH_TYPE_LOVE_PHOTO);
         lovePhoto.setStatus(Boolean.FALSE);
         resourcePathMapper.insert(lovePhoto);
@@ -487,7 +487,7 @@ public class WebInfoController {
         }
         treeHoleMapper.insert(treeHole);
         if (!StringUtils.hasText(treeHole.getAvatar())) {
-            treeHole.setAvatar(PoetryUtil.getRandomAvatar(null));
+            treeHole.setAvatar(UBUtil.getRandomAvatar(null));
         }
         return UResult.success(treeHole);
     }
@@ -520,7 +520,7 @@ public class WebInfoController {
 
         treeHoles.forEach(treeHole -> {
             if (!StringUtils.hasText(treeHole.getAvatar())) {
-                treeHole.setAvatar(PoetryUtil.getRandomAvatar(treeHole.getId().toString()));
+                treeHole.setAvatar(UBUtil.getRandomAvatar(treeHole.getId().toString()));
             }
         });
         return UResult.success(treeHoles);

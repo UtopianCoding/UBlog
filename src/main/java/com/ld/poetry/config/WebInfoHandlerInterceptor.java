@@ -4,11 +4,18 @@ import com.alibaba.fastjson.JSON;
 import com.ld.poetry.entity.WebInfo;
 import com.ld.poetry.utils.CodeMsg;
 import com.ld.poetry.utils.CommonConst;
+import com.ld.poetry.utils.UBUtil;
 import com.ld.poetry.utils.UCache;
+import com.ld.poetry.utils.cache.RedisCache;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.concurrent.TimeUnit;
 
 public class WebInfoHandlerInterceptor implements HandlerInterceptor {
 

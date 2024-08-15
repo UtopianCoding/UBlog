@@ -116,8 +116,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         String webName = (webInfo == null ? "Poetize" : webInfo.getWebName());
         return String.format(mailUtil.getMailText(),
                 webName,
-                String.format(MailUtil.notificationMail, PoetryUtil.getAdminUser().getUsername()),
-                PoetryUtil.getAdminUser().getUsername(),
+                String.format(MailUtil.notificationMail, UBUtil.getAdminUser().getUsername()),
+                UBUtil.getAdminUser().getUsername(),
                 String.format(subscribeFormat, labelName, articleTitle),
                 "",
                 webName);
@@ -125,7 +125,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
     @Override
     public UResult deleteArticle(Integer id) {
-        Integer userId = PoetryUtil.getUserId();
+        Integer userId = UBUtil.getUserId();
         lambdaUpdate().eq(Article::getId, id)
                 .eq(Article::getUserId, userId)
                 .remove();
@@ -142,14 +142,14 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             return UResult.fail("请设置文章密码！");
         }
 
-        Integer userId = PoetryUtil.getUserId();
+        Integer userId = UBUtil.getUserId();
         LambdaUpdateChainWrapper<Article> updateChainWrapper = lambdaUpdate()
                 .eq(Article::getId, articleVO.getId())
                 .eq(Article::getUserId, userId)
                 .set(Article::getLabelId, articleVO.getLabelId())
                 .set(Article::getSortId, articleVO.getSortId())
                 .set(Article::getArticleTitle, articleVO.getArticleTitle())
-                .set(Article::getUpdateBy, PoetryUtil.getUsername())
+                .set(Article::getUpdateBy, UBUtil.getUsername())
                 .set(Article::getArticleContent, articleVO.getArticleContent());
 
         if (StringUtils.hasText(articleVO.getArticleCover())) {
@@ -282,7 +282,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         LambdaQueryChainWrapper<Article> lambdaQuery = lambdaQuery();
         lambdaQuery.select(Article.class, a -> !a.getColumn().equals("article_content"));
         if (!isBoss) {
-            lambdaQuery.eq(Article::getUserId, PoetryUtil.getUserId());
+            lambdaQuery.eq(Article::getUserId, UBUtil.getUserId());
         } else {
             if (baseRequestVO.getUserId() != null) {
                 lambdaQuery.eq(Article::getUserId, baseRequestVO.getUserId());
@@ -320,7 +320,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     @Override
     public UResult<ArticleVO> getArticleByIdForUser(Integer id) {
         LambdaQueryChainWrapper<Article> lambdaQuery = lambdaQuery();
-        lambdaQuery.eq(Article::getId, id).eq(Article::getUserId, PoetryUtil.getUserId());
+        lambdaQuery.eq(Article::getId, id).eq(Article::getUserId, UBUtil.getUserId());
         Article article = lambdaQuery.one();
         if (article == null) {
             return UResult.fail("文章不存在！");
@@ -370,7 +370,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         BeanUtils.copyProperties(article, articleVO);
         if (!isAdmin) {
             if (!StringUtils.hasText(articleVO.getArticleCover())) {
-                articleVO.setArticleCover(PoetryUtil.getRandomCover(articleVO.getId().toString()));
+                articleVO.setArticleCover(UBUtil.getRandomCover(articleVO.getId().toString()));
             }
         }
 
@@ -378,7 +378,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         if (user != null && StringUtils.hasText(user.getUsername())) {
             articleVO.setUsername(user.getUsername());
         } else if (!isAdmin) {
-            articleVO.setUsername(PoetryUtil.getRandomName(articleVO.getUserId().toString()));
+            articleVO.setUsername(UBUtil.getRandomName(articleVO.getUserId().toString()));
         }
         if (articleVO.getCommentStatus()) {
             articleVO.setCommentCount(commonQuery.getCommentCount(articleVO.getId(), CommentTypeEnum.COMMENT_TYPE_ARTICLE.getCode()));

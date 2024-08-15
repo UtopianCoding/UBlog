@@ -31,20 +31,20 @@ public class MailSendUtil {
         String toName = "";
         if (commentVO.getParentUserId() != null) {
             User user = commonQuery.getUser(commentVO.getParentUserId());
-            if (user != null && !user.getId().equals(PoetryUtil.getUserId()) && StringUtils.hasText(user.getEmail())) {
+            if (user != null && !user.getId().equals(UBUtil.getUserId()) && StringUtils.hasText(user.getEmail())) {
                 toName = user.getUsername();
                 mail.add(user.getEmail());
             }
         } else {
             if (CommentTypeEnum.COMMENT_TYPE_MESSAGE.getCode().equals(commentVO.getType()) ||
                     CommentTypeEnum.COMMENT_TYPE_LOVE.getCode().equals(commentVO.getType())) {
-                User adminUser = PoetryUtil.getAdminUser();
-                if (StringUtils.hasText(adminUser.getEmail()) && !Objects.equals(PoetryUtil.getUserId(), adminUser.getId())) {
+                User adminUser = UBUtil.getAdminUser();
+                if (StringUtils.hasText(adminUser.getEmail()) && !Objects.equals(UBUtil.getUserId(), adminUser.getId())) {
                     mail.add(adminUser.getEmail());
                 }
             } else if (CommentTypeEnum.COMMENT_TYPE_ARTICLE.getCode().equals(commentVO.getType())) {
                 User user = commonQuery.getUser(one.getUserId());
-                if (user != null && StringUtils.hasText(user.getEmail()) && !user.getId().equals(PoetryUtil.getUserId())) {
+                if (user != null && StringUtils.hasText(user.getEmail()) && !user.getId().equals(UBUtil.getUserId())) {
                     mail.add(user.getEmail());
                 }
             }
@@ -56,7 +56,7 @@ public class MailSendUtil {
                 sourceName = one.getArticleTitle();
             }
             String commentMail = getCommentMail(commentVO.getType(), sourceName,
-                    PoetryUtil.getUsername(),
+                    UBUtil.getUsername(),
                     commentVO.getCommentContent(),
                     toName,
                     commentVO.getParentCommentId(), commentService);

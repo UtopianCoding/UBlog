@@ -7,7 +7,7 @@ import com.ld.poetry.config.SaveCheck;
 import com.ld.poetry.service.UserService;
 import com.ld.poetry.utils.CommonConst;
 import com.ld.poetry.utils.UCache;
-import com.ld.poetry.utils.PoetryUtil;
+import com.ld.poetry.utils.UBUtil;
 import com.ld.poetry.vo.LoginVo;
 import com.ld.poetry.vo.UserVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,7 +73,7 @@ public class UserController {
     @PostMapping("/updateUserInfo")
     @LoginCheck
     public UResult<UserVO> updateUserInfo(@RequestBody UserVO user) {
-        UCache.remove(CommonConst.USER_CACHE + PoetryUtil.getUserId().toString());
+        UCache.remove(CommonConst.USER_CACHE + UBUtil.getUserId().toString());
         return userService.updateUserInfo(user);
     }
 
@@ -113,7 +113,7 @@ public class UserController {
     @PostMapping("/updateSecretInfo")
     @LoginCheck
     public UResult<UserVO> updateSecretInfo(@RequestParam("place") String place, @RequestParam("flag") Integer flag, @RequestParam(value = "code", required = false) String code, @RequestParam("password") String password) {
-        UCache.remove(CommonConst.USER_CACHE + PoetryUtil.getUserId().toString());
+        UCache.remove(CommonConst.USER_CACHE + UBUtil.getUserId().toString());
         return userService.updateSecretInfo(place, flag, code, password);
     }
 
@@ -158,7 +158,7 @@ public class UserController {
     @GetMapping("/subscribe")
     @LoginCheck
     public UResult<UserVO> subscribe(@RequestParam("labelId") Integer labelId, @RequestParam("flag") Boolean flag) {
-        UCache.remove(CommonConst.USER_CACHE + PoetryUtil.getUserId().toString());
+        UCache.remove(CommonConst.USER_CACHE + UBUtil.getUserId().toString());
         return userService.subscribe(labelId, flag);
     }
 }

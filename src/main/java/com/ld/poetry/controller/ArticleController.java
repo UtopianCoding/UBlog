@@ -7,7 +7,7 @@ import com.ld.poetry.config.UResult;
 import com.ld.poetry.service.ArticleService;
 import com.ld.poetry.utils.CommonConst;
 import com.ld.poetry.utils.UCache;
-import com.ld.poetry.utils.PoetryUtil;
+import com.ld.poetry.utils.UBUtil;
 import com.ld.poetry.vo.ArticleVO;
 import com.ld.poetry.vo.BaseRequestVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +35,7 @@ public class ArticleController {
 //    @LoginCheck(1)
     @PostMapping("/saveArticle")
     public UResult saveArticle(@Validated @RequestBody ArticleVO articleVO) {
-//        UCache.remove(CommonConst.USER_ARTICLE_LIST + PoetryUtil.getUserId().toString());
+//        UCache.remove(CommonConst.USER_ARTICLE_LIST + UBUtil.getUserId().toString());
 //        UCache.remove(CommonConst.ARTICLE_LIST);
 
         return articleService.saveArticle(articleVO);
@@ -48,7 +48,7 @@ public class ArticleController {
     @GetMapping("/deleteArticle")
     @LoginCheck(1)
     public UResult deleteArticle(@RequestParam("id") Integer id) {
-        UCache.remove(CommonConst.USER_ARTICLE_LIST + PoetryUtil.getUserId().toString());
+        UCache.remove(CommonConst.USER_ARTICLE_LIST + UBUtil.getUserId().toString());
         UCache.remove(CommonConst.ARTICLE_LIST);
         return articleService.deleteArticle(id);
     }

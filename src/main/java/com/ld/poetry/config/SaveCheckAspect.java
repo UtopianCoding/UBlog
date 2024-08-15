@@ -4,7 +4,7 @@ import com.ld.poetry.entity.User;
 import com.ld.poetry.handle.PoetryRuntimeException;
 import com.ld.poetry.utils.CommonConst;
 import com.ld.poetry.utils.UCache;
-import com.ld.poetry.utils.PoetryUtil;
+import com.ld.poetry.utils.UBUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -26,11 +26,11 @@ public class SaveCheckAspect {
     public Object around(ProceedingJoinPoint joinPoint, SaveCheck saveCheck) throws Throwable {
         boolean flag = false;
 
-        String token = PoetryUtil.getToken();
+        String token = UBUtil.getToken();
         if (StringUtils.hasText(token)) {
             User user = (User) UCache.get(token);
             if (user != null) {
-                if (user.getId().intValue() == PoetryUtil.getAdminUser().getId().intValue()) {
+                if (user.getId().intValue() == UBUtil.getAdminUser().getId().intValue()) {
                     return joinPoint.proceed();
                 }
 
@@ -47,7 +47,7 @@ public class SaveCheckAspect {
             }
         }
 
-        String ip = PoetryUtil.getIpAddr(PoetryUtil.getRequest());
+        String ip = UBUtil.getIpAddr(UBUtil.getRequest());
         AtomicInteger atomic = (AtomicInteger) UCache.get(CommonConst.SAVE_COUNT_IP + ip);
         if (atomic == null) {
             atomic = new AtomicInteger();

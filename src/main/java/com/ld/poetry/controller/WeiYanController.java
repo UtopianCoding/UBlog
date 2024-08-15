@@ -11,7 +11,7 @@ import com.ld.poetry.entity.WeiYan;
 import com.ld.poetry.service.WeiYanService;
 import com.ld.poetry.utils.CommonConst;
 import com.ld.poetry.utils.PoetryEnum;
-import com.ld.poetry.utils.PoetryUtil;
+import com.ld.poetry.utils.UBUtil;
 import com.ld.poetry.utils.StringUtil;
 import com.ld.poetry.vo.BaseRequestVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,10 +49,10 @@ public class WeiYanController {
         weiYanVO.setContent(content);
 
         WeiYan weiYan = new WeiYan();
-        weiYan.setUserId(PoetryUtil.getUserId());
+        weiYan.setUserId(UBUtil.getUserId());
         weiYan.setContent(weiYanVO.getContent());
         weiYan.setIsPublic(weiYanVO.getIsPublic());
-        weiYan.setUserName(PoetryUtil.getUsername());
+        weiYan.setUserName(UBUtil.getUsername());
         weiYan.setRealm("一年级");
         weiYan.setType(CommonConst.WEIYAN_TYPE_FRIEND);
         weiYanService.save(weiYan);
@@ -70,7 +70,7 @@ public class WeiYanController {
             return UResult.fail("信息不全！");
         }
 
-        Integer userId = PoetryUtil.getUserId();
+        Integer userId = UBUtil.getUserId();
 
         LambdaQueryChainWrapper<Article> wrapper = new LambdaQueryChainWrapper<>(articleMapper);
         Integer count = wrapper.eq(Article::getId, weiYanVO.getSource()).eq(Article::getUserId, userId).count();
@@ -86,7 +86,7 @@ public class WeiYanController {
         weiYan.setSource(weiYanVO.getSource());
         weiYan.setCreateTime(weiYanVO.getCreateTime());
         weiYan.setType(CommonConst.WEIYAN_TYPE_NEWS);
-        weiYan.setUserName(PoetryUtil.getUsername());
+        weiYan.setUserName(UBUtil.getUsername());
         weiYan.setRealm("一年级");
         weiYanService.save(weiYan);
         return UResult.success();
@@ -115,7 +115,7 @@ public class WeiYanController {
     @GetMapping("/deleteWeiYan")
     @LoginCheck
     public UResult deleteWeiYan(@RequestParam("id") Integer id) {
-        Integer userId = PoetryUtil.getUserId();
+        Integer userId = UBUtil.getUserId();
         weiYanService.lambdaUpdate().eq(WeiYan::getId, id)
                 .eq(WeiYan::getUserId, userId)
                 .remove();
@@ -131,16 +131,16 @@ public class WeiYanController {
         LambdaQueryChainWrapper<WeiYan> lambdaQuery = weiYanService.lambdaQuery();
         lambdaQuery.eq(WeiYan::getType, CommonConst.WEIYAN_TYPE_FRIEND);
         System.out.println("..............."+baseRequestVO.getUserId());
-        System.out.println("***************"+PoetryUtil.getUserId());
+        System.out.println("***************"+UBUtil.getUserId());
         if (baseRequestVO.getUserId() == null) {
-            if (PoetryUtil.getUserId() != null) {
-                lambdaQuery.eq(WeiYan::getUserId, PoetryUtil.getUserId());
+            if (UBUtil.getUserId() != null) {
+                lambdaQuery.eq(WeiYan::getUserId, UBUtil.getUserId());
             } else {
                 lambdaQuery.eq(WeiYan::getIsPublic, PoetryEnum.PUBLIC.getCode());
-                lambdaQuery.eq(WeiYan::getUserId, PoetryUtil.getAdminUser().getId());
+                lambdaQuery.eq(WeiYan::getUserId, UBUtil.getAdminUser().getId());
             }
         } else {
-            if (!baseRequestVO.getUserId().equals(PoetryUtil.getUserId())) {
+            if (!baseRequestVO.getUserId().equals(UBUtil.getUserId())) {
                 lambdaQuery.eq(WeiYan::getIsPublic, PoetryEnum.PUBLIC.getCode());
             }
             lambdaQuery.eq(WeiYan::getUserId, baseRequestVO.getUserId());
