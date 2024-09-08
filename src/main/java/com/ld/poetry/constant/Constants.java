@@ -152,6 +152,12 @@ public class Constants {
     public static final String LOOKUP_LDAPS = "ldaps:";
 
 
+    public static final String USER_EMAIL="userEmail";
+
+
+    public static final String SYS_CONFIG="codeType";
+
+
 
 
 }

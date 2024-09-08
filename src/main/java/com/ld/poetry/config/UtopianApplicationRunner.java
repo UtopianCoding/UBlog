@@ -1,7 +1,10 @@
 package com.ld.poetry.config;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
+import com.ld.poetry.constant.Constants;
 import com.ld.poetry.dao.HistoryInfoMapper;
+import com.ld.poetry.dao.SysConfigMapper;
 import com.ld.poetry.dao.WebInfoMapper;
 import com.ld.poetry.entity.*;
 
@@ -11,6 +14,7 @@ import com.ld.poetry.utils.CommonConst;
 import com.ld.poetry.utils.CommonQuery;
 import com.ld.poetry.utils.UCache;
 import com.ld.poetry.utils.PoetryEnum;
+import com.ld.poetry.utils.cache.RedisCache;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
@@ -49,6 +53,11 @@ public class UtopianApplicationRunner implements ApplicationRunner {
     @Resource
     private HistoryInfoMapper historyInfoMapper;
 
+    @Autowired
+    private RedisCache redisUtil;
+
+    @Autowired
+    private SysConfigMapper sysConfigMapper;
 
 
     @Override
@@ -84,6 +93,13 @@ public class UtopianApplicationRunner implements ApplicationRunner {
         history.put(CommonConst.IP_HISTORY_HOUR, historyInfoMapper.getHistoryBy24Hour());
         history.put(CommonConst.IP_HISTORY_COUNT, historyInfoMapper.getHistoryCount());
         UCache.put(CommonConst.IP_HISTORY_STATISTICS, history);
+        List<SysConfig> sysConfigs=sysConfigMapper.findAll();
+        if (!CollectionUtils.isEmpty(sysConfigs)){
+            sysConfigs.stream().forEach(v->{
+                redisUtil.set(Constants.SYS_CONFIG+v.getSysName(), v.getSysValue());
+            });
+        }
+
 
 
     }

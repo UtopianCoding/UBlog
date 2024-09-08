@@ -44,6 +44,47 @@ public class MailUtil {
     public static final String imMail = "你收到来自 %s 的消息";
     public static final String notificationMail = "你收到来自 %s 的订阅";
 
+    public static  final String friendText="<div style=\"font-family: serif;line-height: 22px;padding: 30px\">\n" +
+            "    <div style=\"display: flex;justify-content: center;width: 100%%;max-width: 900px;background-size: cover;border-radius: 10px\"></div>\n" +
+            "    <div style=\"margin-top: 20px;display: flex;flex-direction: column;align-items: center\">\n" +
+            "        <div style=\"margin: 10px auto 20px;text-align: center\">\n" +
+            "            <div style=\"line-height: 32px;font-size: 26px;font-weight: bold;color: #000000\">\n" +
+            "                嘿！你在 %s 中收到一条新消息。\n" +
+            "            </div>\n" +
+            "        </div>\n" +
+            "        <div style=\"min-width: 1250px;max-width: 800px;min-height: 128px;background: #F7F7F7;border-radius: 10px;padding: 32px\">\n" +
+            "            <div>\n" +
+            "                <div style=\"font-size: 18px;margin-top:10px;font-weight: bold;color: #C5343E\">\n" +
+            "                  网址名称： %s \n" +
+            "                </div>\n" +
+            "                <div style=\"font-size: 18px;margin-top:10px;font-weight: bold;color: #C5343E\">\n" +
+            "                 网址：   %s \n" +
+            "                </div>\n" +
+            "                <div style=\"font-size: 18px;margin-top:10px;font-weight: bold;color: #C5343E\">\n" +
+            "                 头像：  %s \n" +
+            "                </div>\n" +
+            "                <div style=\"font-size: 18px;margin-top:10px;font-weight: bold;color: #C5343E\">\n" +
+            "                 描述：  %s \n" +
+            "                </div>\n" +
+
+            "                <div style=\"margin-top: 6px;font-size: 16px;color: #000000\">\n" +
+            "                    <p>\n" +
+            "                        \n" +
+            "                    </p>\n" +
+            "                </div>\n" +
+            "            </div>\n" +
+            "            \n" +
+            "            <a style=\"width: 150px;height: 38px;background: #ef859d38;border-radius: 32px;display: flex;align-items: center;justify-content: center;text-decoration: none;margin: 40px auto 0\"\n" +
+            "               href=\"https://syml.online\" target=\"_blank\">\n" +
+            "                <span style=\"color: #DB214B\">有朋自远方来</span>\n" +
+            "            </a>\n" +
+            "        </div>\n" +
+            "        <div style=\"margin-top: 20px;font-size: 12px;color: #00000045\">\n" +
+            "        </div>\n" +
+            "    </div>\n" +
+            "</div>";
+
+
     @Autowired
     private JavaMailSender mailSender;
 
@@ -86,7 +127,7 @@ public class MailUtil {
                 "            </div>\n" +
                 "            %s\n" +
                 "            <a style=\"width: 150px;height: 38px;background: #ef859d38;border-radius: 32px;display: flex;align-items: center;justify-content: center;text-decoration: none;margin: 40px auto 0\"\n" +
-                "               href=\"https://poetize.cn\" target=\"_blank\">\n" +
+                "               href=\"https://syml.online\" target=\"_blank\">\n" +
                 "                <span style=\"color: #DB214B\">有朋自远方来</span>\n" +
                 "            </a>\n" +
                 "        </div>\n" +
