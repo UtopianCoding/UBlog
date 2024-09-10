@@ -1,5 +1,6 @@
 package com.ld.poetry.service.impl;
 
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -87,7 +88,7 @@ public class FriendServiceImpl implements FriendService  {
         String browser = userAgent.getBrowser().getName();
 
 
-
+        Integer userId = UBUtil.getUserId();
         FriendComment comment=new FriendComment();
         comment.setName(request.getComment().getName());
         comment.setAvatar(request.getComment().getAvatar());
@@ -96,6 +97,7 @@ public class FriendServiceImpl implements FriendService  {
         comment.setBrowser(browser);
         comment.setType("friend");
         comment.setParentCommentId(0);
+        comment.setUserId(userId);
         comment.setCreateTime(LocalDateTime.now());
         friendCommentService.saveFriendComment(comment);
 
@@ -115,5 +117,42 @@ public class FriendServiceImpl implements FriendService  {
 
     }
 
+    @Override
+    public UResult saveComment(FriendCommentVo commentVO) {
 
+        FriendComment comment = new FriendComment();
+
+        comment.setType(commentVO.getType());
+        comment.setCommentContent(commentVO.getCommentContent());
+        comment.setParentCommentId(commentVO.getParentCommentId());
+        comment.setFloorCommentId(commentVO.getFloorCommentId());
+        comment.setParentUserId(commentVO.getParentUserId());
+        comment.setCreateTime(LocalDateTime.now());
+        if (UBUtil.getUserId()!=null){
+            comment.setUserId(UBUtil.getUserId());
+        }
+
+        if (StringUtils.hasText(commentVO.getCommentInfo())) {
+            comment.setCommentInfo(commentVO.getCommentInfo());
+        }
+
+         UserAgent userAgent = UserAgent.parseUserAgentString(ServletUtils.getRequest().getHeader("User-Agent"));
+         String ip = IpUtils.getIpAddr();
+
+        // 获取客户端操作系统
+        String os = userAgent.getOperatingSystem().getName();
+        // 获取客户端浏览器
+        String browser = userAgent.getBrowser().getName();
+
+        Integer userId = UBUtil.getUserId();
+
+        comment.setSystemversion(os);
+        comment.setBrowser(browser);
+        comment.setUserId(userId);
+        friendCommentService.saveFriendComment(comment);
+
+
+
+        return UResult.success();
+    }
 }

@@ -61,7 +61,7 @@ public class FriendCommentServiceImpl extends ServiceImpl<FriendCommentMapper, F
             List<FriendCommentVo> commentVOs = comments.stream().map(c -> {
                 FriendCommentVo commentVO = buildCommentVO(c);
                 Page page = new Page(1, 5);
-                lambdaQuery().eq(FriendComment::getParentCommentId, c.getId()).orderByAsc(FriendComment::getCreateTime).page(page);
+                lambdaQuery().eq(FriendComment::getFloorCommentId, c.getId()).orderByAsc(FriendComment::getCreateTime).page(page);
                 List<FriendComment> childComments = page.getRecords();
                 if (childComments != null) {
                     List<FriendCommentVo> ccVO = childComments.stream().map(cc -> buildCommentVO(cc)).collect(Collectors.toList());
@@ -106,4 +106,5 @@ public class FriendCommentServiceImpl extends ServiceImpl<FriendCommentMapper, F
         }
         return commentVO;
     }
+
 }

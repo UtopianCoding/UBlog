@@ -19,4 +19,6 @@ public interface FriendCommentService {
     void saveFriendComment(FriendComment comment);
 
     Integer getFriendCommentCount();
+
+
 }

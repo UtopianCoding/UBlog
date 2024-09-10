@@ -2,6 +2,7 @@ package com.ld.poetry.service;
 
 import com.ld.poetry.config.UResult;
 import com.ld.poetry.vo.BaseRequestVO;
+import com.ld.poetry.vo.friend.FriendCommentVo;
 import com.ld.poetry.vo.friend.FriendSaveRequest;
 
 /**
@@ -18,4 +19,6 @@ public interface FriendService  {
     Integer getFriendCommentCount();
 
     UResult<BaseRequestVO> listComment(BaseRequestVO baseRequestVO);
+
+    UResult saveComment(FriendCommentVo commentVO);
 }

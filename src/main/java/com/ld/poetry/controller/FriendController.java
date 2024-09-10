@@ -16,6 +16,7 @@ import com.ld.poetry.utils.*;
 import com.ld.poetry.utils.system.IpUtils;
 import com.ld.poetry.utils.system.ServletUtils;
 import com.ld.poetry.vo.BaseRequestVO;
+import com.ld.poetry.vo.friend.FriendCommentVo;
 import com.ld.poetry.vo.friend.FriendSaveRequest;
 import com.ld.poetry.vo.friend.FriendVo;
 import eu.bitwalker.useragentutils.UserAgent;
@@ -42,29 +43,16 @@ import java.util.Random;
 @RequestMapping("/api/friend")
 public class FriendController {
 
-    @Autowired
-    private MailUtil mailUtil;
 
-    @Autowired
-    private SysConfigService sysConfigService;
-
-    @Autowired
-    private FriendBlogMapper friendBlogMapper;
-
-    @Autowired
-    private FriendCommentMapper friendCommentMapper;
 
     @Autowired
     private FriendService friendService;
 
-    @Autowired
-    private CommonQuery commonQuery;
+
     @PostMapping("/saveFriend")
     public UResult saveFriend(@RequestBody @Valid FriendSaveRequest request) {
 
-
        return friendService.saveFriend(request);
-
 
     }
 
@@ -86,6 +74,18 @@ public class FriendController {
     }
 
 
+    @PostMapping("/saveFriendComment")
+    public UResult saveComment(@RequestBody FriendCommentVo commentVO) {
+
+        String content = StringUtil.removeHtml(commentVO.getCommentContent());
+        if (!StringUtils.hasText(content)) {
+            return UResult.fail("评论内容不合法！");
+        }
+        commentVO.setCommentContent(content);
+
+
+        return friendService.saveComment(commentVO);
+    }
 
 
 }
