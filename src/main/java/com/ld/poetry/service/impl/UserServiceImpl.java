@@ -2,6 +2,8 @@ package com.ld.poetry.service.impl;
 
 import cn.hutool.crypto.SecureUtil;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -16,8 +18,11 @@ import com.ld.poetry.service.UserService;
 import com.ld.poetry.service.WeiYanService;
 import com.ld.poetry.utils.*;
 import com.ld.poetry.vo.BaseRequestVO;
+import com.ld.poetry.vo.SocialUser;
 import com.ld.poetry.vo.UserVO;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.HttpResponse;
+import org.apache.http.util.EntityUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,10 +34,7 @@ import org.springframework.util.StringUtils;
 import org.tio.core.Tio;
 
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -53,6 +55,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Value("${user.code.format}")
     private String codeFormat;
+
+
+    @Autowired
+    private UserMapper userMapper;
 
     @Override
     public UResult<UserVO> login(String account, String password, Boolean isAdmin) {
@@ -559,5 +565,64 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 String.format(codeFormat, i),
                 "",
                 webName);
+    }
+
+    @Override
+    public void oauth2Login(SocialUser socialUser) throws Exception {
+
+        //登录和注册合并逻辑
+        //备注：视频中“微博”社交不需要Access_token也可以获取用户uid，而gitee则需要再发带token请求
+        //2.1 查询当前社交用户的社交账号信息(uid,昵称，性别等)
+
+        Map<String,String> query=new HashMap<>();
+        query.put("access_token",socialUser.getAccess_token());
+//        https://gitee.com/api/v5/user?access_token=22e75238964d4aac22a6f863c5fb67a3
+        HttpResponse response = HttpUtils.doGet("https://gitee.com", "/api/v5/user", "get", new HashMap<String, String>(), query);
+
+        if (response.getStatusLine().getStatusCode()==200){
+            String json= EntityUtils.toString(response.getEntity());
+            JSONObject jsonObject = JSON.parseObject(json);
+            System.out.println("返回的json数据为:"+jsonObject);
+            String id = jsonObject.get("id").toString();
+            //1.判断当前社交用户是否已经登陆过系统
+            User memberEntity = this.baseMapper.selectOne(new QueryWrapper<User>().eq("social_id", id));
+            if (memberEntity!=null){
+                //1、用户已有注册记录，更新信息
+                User updateMemberEntity = new User();
+                updateMemberEntity.setId(memberEntity.getId());
+                updateMemberEntity.setAccessToken(socialUser.getAccess_token());
+                updateMemberEntity.setExpiresIn(socialUser.getExpires_in());
+                //...其他的不重要，更不更新无所谓
+                updateById(updateMemberEntity);
+
+                memberEntity.setAccessToken(socialUser.getAccess_token());
+                memberEntity.setExpiresIn(socialUser.getExpires_in());
+
+            }else {
+                //2.没有查到当前社交用户记录，就需要注册一个
+
+                User insertMemberEntity = new User();
+                try{
+                    String name = jsonObject.get("name").toString();
+                    String email = jsonObject.get("email").toString();
+                    String socialId = jsonObject.get("id").toString();
+                    //.....等等信息
+                    insertMemberEntity.setUsername(name);
+                    insertMemberEntity.setEmail(email);
+                    insertMemberEntity.setSocialId(socialId);
+
+                }catch (Exception e){
+                    /**
+                     * 远程查询昵称这些不重要的，即是出现问题也可以忽略
+                     */
+                }
+                insertMemberEntity.setAccessToken(socialUser.getAccess_token());
+                insertMemberEntity.setExpiresIn(socialUser.getExpires_in());
+                System.out.println(insertMemberEntity);
+                userMapper.insert(insertMemberEntity);
+
+            }
+        }
+
     }
 }

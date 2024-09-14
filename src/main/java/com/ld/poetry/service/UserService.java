@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.ld.poetry.config.UResult;
 import com.ld.poetry.entity.User;
 import com.ld.poetry.vo.BaseRequestVO;
+import com.ld.poetry.vo.SocialUser;
 import com.ld.poetry.vo.UserVO;
 
 import java.util.List;
@@ -44,4 +45,6 @@ public interface UserService extends IService<User> {
     UResult<UserVO> token(String userToken);
 
     UResult<UserVO> subscribe(Integer labelId, Boolean flag);
+
+    void oauth2Login(SocialUser socialUser) throws Exception;
 }

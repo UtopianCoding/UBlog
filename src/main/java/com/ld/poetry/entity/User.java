@@ -119,4 +119,19 @@ public class User implements Serializable {
     private Boolean deleted;
 
 
+    /**
+     * 社交登录唯一id
+     */
+    @TableField("social_id")
+    private String socialId;
+    /**
+     * 过期时间
+     */
+    @TableField("expires_in")
+    private Long expiresIn;
+    /**
+     * 令牌
+     */
+    @TableField("access_token")
+    private String accessToken;
 }
