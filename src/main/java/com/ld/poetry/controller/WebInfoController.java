@@ -388,7 +388,7 @@ public class WebInfoController {
     @GetMapping("/listPhoto")
     public UResult<List<Map<String,Object>>> listPhoto(){
         QueryWrapper<ResourcePath> queryWrapper=new QueryWrapper<>();
-        queryWrapper.eq("type",CommonConst.RESOURCE_PATH_TYPE_PHOTO);
+        queryWrapper.eq("type",CommonConst.RESOURCE_PATH_TYPE_PHOTO).eq("status",Boolean.TRUE);
         List<Map<String, Object>> maps = resourcePathMapper.selectMaps(queryWrapper);
         return UResult.success(maps);
     }

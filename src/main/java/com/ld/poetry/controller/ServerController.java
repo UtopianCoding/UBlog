@@ -1,16 +1,17 @@
 package com.ld.poetry.controller;
 
-import com.ld.poetry.config.LoginCheck;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ld.poetry.config.UResult;
 import com.ld.poetry.entity.vo.SysUserOnline;
 import com.ld.poetry.service.ServerService;
+import com.ld.poetry.utils.StringUtils;
 import com.ld.poetry.utils.system.Server;
+import com.ld.poetry.vo.caption.CaptionRequest;
+import com.ld.poetry.vo.caption.CaptionVo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -49,5 +50,11 @@ public class ServerController {
         return UResult.success(sys);
     }
 
+    @PostMapping("/caption")
+    public UResult getCaption(@RequestBody CaptionRequest request){
+
+        return  serverService.getCaption(request);
+
+    }
 
 }

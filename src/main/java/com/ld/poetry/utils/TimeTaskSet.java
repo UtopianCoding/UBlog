@@ -40,7 +40,7 @@ public class TimeTaskSet {
     @Resource
     private StatMapper statMapper;
 
-    @Scheduled(cron = "0 0 1 * * ?")
+//    @Scheduled(cron = "0 0 1 * * ?")
     public void isJudgeUrlState(){
         LambdaQueryChainWrapper<FriendBlog> wrapper=new LambdaQueryChainWrapper<>(friendBlogMapper);
         List<FriendBlog> friendBlogs = wrapper.orderByAsc(FriendBlog::getCreatetime).list();

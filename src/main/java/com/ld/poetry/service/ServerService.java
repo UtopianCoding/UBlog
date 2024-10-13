@@ -1,6 +1,8 @@
 package com.ld.poetry.service;
 
+import com.ld.poetry.config.UResult;
 import com.ld.poetry.entity.vo.SysUserOnline;
+import com.ld.poetry.vo.caption.CaptionRequest;
 
 import java.util.List;
 
@@ -14,4 +16,6 @@ import java.util.List;
  */
 public interface ServerService {
      List<SysUserOnline> getUserList() ;
+
+    UResult getCaption(CaptionRequest request);
 }
